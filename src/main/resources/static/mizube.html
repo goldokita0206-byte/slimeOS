@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>水辺の広場 - Slime OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <script>
+      // Tailwind カスタム設定：水辺のテーマカラー
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              water: {
+                deep: "#164e63",
+                medium: "#0e7490",
+                light: "#0891b2",
+                pale: "#bae6fd",
+                soft: "#e0f2fe",
+              },
+              slime: {
+                green: "#84cc16",
+                blue: "#38bdf8",
+              },
+            },
+            animation: {
+              "float-slow": "float 8s ease-in-out infinite",
+              "float-medium": "float 6s ease-in-out infinite",
+              "float-fast": "float 4s ease-in-out infinite",
+            },
+          },
+        },
+      };
+    </script>
+    <!-- シャボン玉アニメーション用 -->
+    <style>
+      /* シャボン玉のコンテナ：画面全体に重ねて表示 */
+      .bubble-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none; /* クリックなどを透過して下のアイコンが使える */
+        z-index: 5; /* 背景より上、アイコンより下に調整可 */
+      }
+
+      /* シャボン玉本体 */
+      .bubble {
+        position: absolute;
+        bottom: -50px; /* 画面外下から出現 */
+        background: rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        box-shadow:
+          inset 0 0 8px rgba(255, 255, 255, 0.3),
+          0 0 12px rgba(173, 216, 230, 0.4);
+        animation: rise 8s linear infinite;
+      }
+
+      /* 上昇＋ゆらぎ＋消えるアニメーション */
+      @keyframes rise {
+        0% {
+          transform: translateY(0) translateX(0) scale(0.5);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.8;
+        }
+        90% {
+          opacity: 0.6;
+        }
+        100% {
+          transform: translateY(-110vh)
+            translateX(calc(-50px + 100px * var(--drift))) scale(1.1);
+          opacity: 0;
+        }
+      }
+    </style>
+
+    <!-- シャボン玉を生成するJavaScript -->
+    <script>
+      function createBubble() {
+        const container = document.querySelector(".bubble-container");
+        if (!container) return;
+
+        // ランダムな大きさ・位置・速度・揺れ幅
+        const size = Math.random() * 30 + 15; // 15px～45px
+        const bubble = document.createElement("div");
+        bubble.classList.add("bubble");
+
+        // スタイルをランダム設定
+        bubble.style.width = size + "px";
+        bubble.style.height = size + "px";
+        bubble.style.left = Math.random() * 100 + "%";
+        bubble.style.animationDuration = Math.random() * 4 + 6 + "s"; // 6～10秒で上昇
+        bubble.style.animationDelay = Math.random() * 2 + "s";
+        bubble.style.setProperty("--drift", Math.random()); // 左右の揺れ
+
+        container.appendChild(bubble);
+
+        // アニメーション終了後に要素を削除
+        setTimeout(() => bubble.remove(), 12000);
+      }
+
+      // ページ読み込み後、一定間隔でシャボン玉を生成
+      window.addEventListener("load", () => {
+        // コンテナがなければ作成
+        if (!document.querySelector(".bubble-container")) {
+          const bubbleArea = document.createElement("div");
+          bubbleArea.classList.add("bubble-container");
+          document.body.appendChild(bubbleArea);
+        }
+        // 0.3秒ごとに1つ生成
+        setInterval(createBubble, 300);
+      });
+    </script>
+
+    <style type="text/tailwindcss">
+      @layer utilities {
+        .content-auto {
+          content-visibility: auto;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .backdrop-blur-xs {
+          backdrop-filter: blur(2px);
+        }
+        .text-shadow {
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+      }
+    </style>
+
+    <style>
+      /* ===== 基本設定 ===== */
+      body {
+  /* この1行だけ修正 */
+/* 背景 */
+background: #164e63 url("izumi suraimu.png") center/cover no-repeat;
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+      /* ===== 共通コンポーネント ===== */
+      .icon-container {
+        display: flex;
+        gap: 30px;
+        padding: 30px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 100;
+      }
+
+      .icon {
+        text-align: center;
+        width: 100px;
+        cursor: pointer;
+        padding: 12px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        user-select: none;
+        background-color: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .icon:hover {
+        background-color: rgba(56, 189, 248, 0.25);
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .icon-img {
+        width: 65px;
+        height: 65px;
+        margin: 0 auto 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 55px;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+      }
+      .icon-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+      .icon > div:last-child {
+        font-size: 16px;
+        line-height: 1.3;
+        font-weight: 500;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      }
+
+      /* ===== ウィンドウ共通 ===== */
+      .window,
+      .office-window,
+      .browser-window {
+        display: none;
+        position: absolute;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        z-index: 200;
+        flex-direction: column;
+        overflow: hidden;
+        backdrop-filter: blur(8px);
+        resize: both;
+        min-width: 300px;
+        min-height: 200px;
+      }
+
+      .window {
+        top: 10%;
+        left: 20%;
+        width: 60%;
+        height: 70%;
+        background: rgba(15, 23, 42, 0.85);
+        color: #e2e8f0;
+      }
+
+      .office-window {
+        top: 5%;
+        left: 10%;
+        width: 80%;
+        height: 85%;
+        background: rgba(15, 23, 42, 0.85);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        border-color: rgba(148, 163, 184, 0.3);
+      }
+
+      .browser-window {
+        top: 15%;
+        left: 15%;
+        width: 70%;
+        height: 70%;
+        background: rgba(248, 250, 252, 0.9);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        border-color: rgba(30, 41, 59, 0.2);
+        z-index: 250;
+      }
+
+      .window-header {
+        background: linear-gradient(135deg, #0891b2, #0e7490);
+        padding: 10px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-weight: bold;
+        user-select: none;
+        cursor: move;
+        color: white;
+      }
+      .window-header.dark {
+        background: linear-gradient(135deg, #334155, #1e293b);
+        color: #bae6fd;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.7);
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+      }
+      .close-btn:hover {
+        color: #ef4444;
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+      .window-header.dark .close-btn {
+        color: rgba(148, 163, 184, 0.8);
+      }
+      .window-header.dark .close-btn:hover {
+        color: #f87171;
+      }
+
+      .window-content {
+        padding: 20px;
+        flex-grow: 1;
+        background: rgba(15, 23, 42, 0.7);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #0891b2 #1e293b;
+      }
+      .window-content::-webkit-scrollbar {
+        width: 8px;
+      }
+      .window-content::-webkit-scrollbar-track {
+        background: #1e293b;
+      }
+      .window-content::-webkit-scrollbar-thumb {
+        background: #0891b2;
+        border-radius: 4px;
+      }
+
+      .office-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: #f8fafc;
+      }
+
+      /* ===== ファイルアイテム ===== */
+      .file-item {
+        margin: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #f1f5f9;
+        font-size: 15px;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        background-color: rgba(255, 255, 255, 0.03);
+      }
+      .file-item:hover {
+        background: rgba(56, 189, 248, 0.2);
+        padding-left: 16px;
+      }
+
+      /* ===== ブラウザ画面 ===== */
+      .browser-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: rgba(248, 250, 252, 0.95);
+        color: #334155;
+        font-family: sans-serif;
+        padding: 40px;
+        user-select: none;
+      }
+      .browser-title {
+        font-size: 32px;
+        font-weight: 600;
+        color: #0f172a;
+        margin-bottom: 10px;
+      }
+      .browser-subtitle {
+        font-size: 16px;
+        color: #64748b;
+        margin-bottom: 50px;
+      }
+      .browser-icons {
+        display: flex;
+        gap: 60px;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .browser-brand {
+        text-align: center;
+        cursor: pointer;
+        width: 90px;
+        padding: 15px 10px;
+        border-radius: 10px;
+        transition: all 0.2s;
+        background-color: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(203, 213, 225, 0.3);
+      }
+      .browser-brand:hover {
+        background: rgba(56, 189, 248, 0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+      }
+      .browser-brand img {
+        width: 65px;
+        height: 65px;
+        object-fit: contain;
+        margin-bottom: 15px;
+        transition: transform 0.2s;
+      }
+      .browser-brand img:hover {
+        transform: scale(1.15);
+      }
+      .browser-brand-name {
+        font-size: 15px;
+        color: #0369a1;
+        font-weight: 500;
+      }
+
+      /* ===== 右クリックメニュー ===== */
+      .custom-menu {
+        display: none;
+        position: absolute;
+        background: rgba(255, 255, 255, 0.95);
+        color: #1e293b;
+        border: 1px solid rgba(203, 213, 225, 0.5);
+        box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.15);
+        padding: 5px 0;
+        min-width: 180px;
+        z-index: 1000;
+        font-size: 14px;
+        user-select: none;
+        border-radius: 8px;
+        backdrop-filter: blur(8px);
+      }
+      .menu-item {
+        padding: 8px 15px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .menu-item:hover {
+        background: rgba(56, 189, 248, 0.2);
+      }
+      .menu-separator {
+        border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+        margin: 5px 0;
+      }
+
+      /* ===== スライムアニメーション ===== */
+      .slime {
+        position: absolute;
+        animation: float 6s ease-in-out infinite;
+        cursor: pointer;
+        pointer-events: auto;
+        z-index: 10;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+        transition: transform 0.3s;
+      }
+      .slime:hover {
+        transform: scale(1.1) !important;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      /* ===== ガラス玉浮遊アイコン ===== */
+      .floating-icons {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 50;
+      }
+      .glass-orb {
+        position: absolute;
+        width: 45px;
+        height: 45px;
+        border-radius: 30%;
+        background: radial-gradient(
+          circle at 30% 30%,
+          rgba(255, 255, 255, 0.7),
+          rgba(255, 255, 255, 0.1) 60%,
+          rgba(255, 255, 255, 0.05)
+        );
+        box-shadow:
+          inset 0 0 20px rgba(255, 255, 255, 0.6),
+          inset 0 -5px 8px rgba(56, 189, 248, 0.2),
+          0 2px 8px rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        color: #1e293b;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(2px);
+      }
+      .glass-orb:hover {
+        transform: scale(1.15) rotate(5deg);
+        box-shadow:
+          inset 0 0 25px rgba(255, 255, 255, 0.7),
+          inset 0 -5px 8px rgba(56, 189, 248, 0.3),
+          0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      @keyframes float1 {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(2deg);
+        }
+        50% {
+          transform: translate(3px, -15px) rotate(-2deg);
+        }
+      }
+      @keyframes float2 {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(-1deg);
+        }
+        50% {
+          transform: translate(-4px, -12px) rotate(1deg);
+        }
+      }
+      @keyframes float3 {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(1deg);
+        }
+        50% {
+          transform: translate(5px, -18px) rotate(-1deg);
+        }
+      }
+      @keyframes float4 {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(-2deg);
+        }
+        50% {
+          transform: translate(-3px, -14px) rotate(2deg);
+        }
+      }
+      @keyframes float5 {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(1deg);
+        }
+        50% {
+          transform: translate(4px, -16px) rotate(-1deg);
+        }
+      }
+      @keyframes float6 {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(-1deg);
+        }
+        50% {
+          transform: translate(-5px, -13px) rotate(1deg);
+        }
+      }
+      @keyframes float7 {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(2deg);
+        }
+        50% {
+          transform: translate(3px, -17px) rotate(-2deg);
+        }
+      }
+      @keyframes float8 {
+        0%,
+        100% {
+          transform: translate(0, 0) rotate(-1deg);
+        }
+        50% {
+          transform: translate(-4px, -15px) rotate(1deg);
+        }
+      }
+
+      /* スタートメニュー */
+      .menu-glass {
+        background: rgba(30, 41, 59, 0.85);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ===== デスクトップアイコン（修正済み：各ページへ直接遷移） ===== -->
+    <div class="icon-container">
+      <div class="icon" onclick="openBrowserWindow()">
+        <div class="icon-img">🌐</div>
+        <div>ブラウザ</div>
+      </div>
+      <a href="document.html" class="icon" style="text-decoration: none; color: inherit;">
+        <div class="icon-img">📁</div>
+        <div>ドキュメント</div>
+      </a>
+      <a href="picture.html" class="icon" style="text-decoration: none; color: inherit;">
+        <div class="icon-img">🖼️</div>
+        <div>ピクチャ</div>
+      </a>
+      <a href="video.html" class="icon" style="text-decoration: none; color: inherit;">
+        <div class="icon-img">🎬</div>
+        <div>ビデオ</div>
+      </a>
+      <a href="office.html" class="icon" style="text-decoration: none; color: inherit;">
+        <div class="icon-img">📚</div>
+        <div>オフィス</div>
+      </a>
+    </div>
+
+    <!-- ===== スライム ===== -->
+   <!-- スライム画像全部 -->
+<!-- ===== スライム ===== -->
+<div class="desktop-slimes">
+  <div class="slime" style="top: 10%; left: 15%; animation-delay: 5s">
+    <img src="izumi suraimu.png" style="width: 50px" alt="slime" />
+  </div>
+  <div class="slime" style="top: 50%; left: 70%; animation-delay: 2s">
+    <img src="izumi suraimu.png" style="width: 40px" alt="slime" />
+  </div>
+  <div class="slime" style="top: 70%; left: 40%; animation-delay: 4s">
+    <img src="izumi suraimu.png" style="width: 60px" alt="slime" />
+  </div>
+  <div class="slime" style="top: 35%; left: 15%; animation-delay: 3s">
+    <img src="izumi suraimu.png" style="width: 40px" alt="slime" />
+  </div>
+  <div class="slime" style="top: 70%; left: 70%; animation-delay: 2s">
+    <img src="izumi suraimu.png" style="width: 60px" alt="slime" />
+  </div>
+  <div class="slime" style="top: 60%; left: 40%; animation-delay: 4s">
+    <img src="izumi suraimu.png" style="width: 80px" alt="slime" />
+  </div>
+</div>
+
+    <!-- ===== 浮遊ガラス玉アイコン ===== -->
+    <div class="floating-icons">
+      <div
+        class="glass-orb"
+        style="top: 38%; left: 72%; animation: float1 7s ease-in-out infinite"
+        onclick="window.open('https://www.youtube.com', '_blank')"
+        title="YouTube"
+      >
+        📺
+      </div>
+      <div
+        class="glass-orb"
+        style="
+          top: 52%;
+          left: 84%;
+          animation: float2 8s ease-in-out infinite 1s;
+        "
+        onclick="window.open('https://www.amazon.co.jp', '_blank')"
+        title="Amazon"
+      >
+        🛒
+      </div>
+      <div
+        class="glass-orb"
+        style="
+          top: 68%;
+          left: 74%;
+          animation: float3 6.5s ease-in-out infinite 2s;
+        "
+        onclick="window.open('https://twitter.com', '_blank')"
+        title="X (Twitter)"
+      >
+        🐦
+      </div>
+      <div
+        class="glass-orb"
+        style="
+          top: 42%;
+          left: 52%;
+          animation: float4 7.5s ease-in-out infinite 0.5s;
+        "
+        onclick="window.open('https://mail.google.com', '_blank')"
+        title="Gmail"
+      >
+        ✉️
+      </div>
+      <div
+        class="glass-orb"
+        style="
+          top: 69%;
+          left: 30%;
+          animation: float5 8.5s ease-in-out infinite 1.5s;
+        "
+        onclick="window.open('https://chatgpt.com', '_blank')"
+        title="ChatGPT"
+      >
+        🤖
+      </div>
+      <div
+        class="glass-orb"
+        style="
+          top: 40%;
+          left: 28%;
+          animation: float6 7s ease-in-out infinite 2.5s;
+        "
+        onclick="window.open('https://github.com', '_blank')"
+        title="GitHub"
+      >
+        🐱
+      </div>
+      <div
+        class="glass-orb"
+        style="
+          top: 56%;
+          left: 62%;
+          animation: float7 6.8s ease-in-out infinite 1.2s;
+        "
+        onclick="window.open('https://www.google.com', '_blank')"
+        title="Google"
+      >
+        🔍
+      </div>
+      <div
+        class="glass-orb"
+        style="
+          top: 52%;
+          left: 46%;
+          animation: float8 7.8s ease-in-out infinite 0.8s;
+        "
+        onclick="openSettings()"
+        title="設定"
+      >
+        ⚙️
+      </div>
+    </div>
+
+    <!-- ===== ウィンドウ要素 ===== -->
+    <div id="fileManager" class="window">
+      <div class="window-header">
+        <span id="windowTitle">ファイルマネージャー</span>
+        <button class="close-btn" onclick="closeWindow()">❌</button>
+      </div>
+      <div id="windowContent" class="window-content"></div>
+    </div>
+
+    <div id="officeAppWindow" class="office-window">
+      <div class="window-header dark">
+        <span id="officeWindowTitle">オンラインエディタ</span>
+        <button class="close-btn" onclick="closeOfficeWindow()">❌</button>
+      </div>
+      <div style="flex-grow: 1; position: relative">
+        <iframe id="officeFrame" class="office-frame" src=""></iframe>
+      </div>
+    </div>
+
+    <div id="browserWindow" class="browser-window">
+      <div class="window-header">
+        <span>Internet Browser Lite</span>
+        <button class="close-btn" onclick="closeBrowserWindow()">❌</button>
+      </div>
+      <div class="browser-content">
+        <div class="browser-title">ブラウザをアップデートしてください</div>
+        <div class="browser-subtitle">
+          最新のブラウザをダウンロードして、より安全で快適なウェブ体験を
+        </div>
+        <div class="browser-icons">
+          <div
+            class="browser-brand"
+            onclick="window.open('https://www.google.com/chrome/', '_blank')"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/888/888846.png"
+              alt="Chrome"
+            />
+            <div class="browser-brand-name">Chrome</div>
+          </div>
+          <div
+            class="browser-brand"
+            onclick="
+              window.open('https://www.mozilla.org/ja/firefox/new/', '_blank')
+            "
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/888/888847.png"
+              alt="Firefox"
+            />
+            <div class="browser-brand-name">Firefox</div>
+          </div>
+          <div
+            class="browser-brand"
+            onclick="window.open('https://www.opera.com/ja', '_blank')"
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/732/732233.png"
+              alt="Opera"
+            />
+            <div class="browser-brand-name">Opera</div>
+          </div>
+          <div
+            class="browser-brand"
+            onclick="
+              window.open('https://www.microsoft.com/ja-jp/edge', '_blank')
+            "
+          >
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/888/888861.png"
+              alt="Edge"
+            />
+            <div class="browser-brand-name">Edge</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 右クリックメニュー ===== -->
+    <div id="customMenu" class="custom-menu">
+      <div class="menu-item" onclick="openBrowserWindow()">
+        🌐 ブラウザの起動(B)
+      </div>
+      <div class="menu-separator"></div>
+      <div class="menu-item" onclick="createNewFolder()">
+        📁 フォルダーの作成(F)...
+      </div>
+      <div class="menu-item" onclick="createNewFile()">
+        📄 ドキュメントの作成(D)
+      </div>
+      <div class="menu-separator"></div>
+      <div class="menu-item">📋 貼り付け(P)</div>
+      <div class="menu-separator"></div>
+      <div class="menu-item">💻 ターミナルを開く</div>
+      <div class="menu-item">📊 タスクマネージャー</div>
+      <div class="menu-item">📷 スクリーンショット</div>
+    </div>
+
+    <!-- ===== タスクバー ===== -->
+    <div
+      class="absolute bottom-0 left-0 w-full h-14 bg-black/30 backdrop-blur-md flex items-center px-4 z-50 border-t border-sky-500/20"
+    >
+      <button
+        onclick="toggleMenu()"
+        class="text-white hover:bg-sky-500/20 p-3 rounded-xl transition font-bold"
+      >
+        Slime OS
+      </button>
+      <div class="ml-auto text-white/80 text-sm" id="currentTime"></div>
+    </div>
+
+    <!-- ===== スタートメニュー ===== -->
+    <div
+      id="startMenu"
+      class="menu-glass absolute bottom-16 left-4 w-72 p-6 rounded-2xl text-white shadow-2xl transition-all duration-500 opacity-0 scale-95 origin-bottom-left z-50 border border-sky-400/20"
+    >
+      <h2 class="text-xl font-bold mb-4 text-sky-300">✨ Slime OS Menu ✨</h2>
+      <div class="space-y-3">
+        <a
+          href="Home.html"
+          class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+          >🌿 スライムの森</a
+        >
+        <a
+          href="mizube.html"
+          class="block w-full text-left p-3 bg-sky-500/20 rounded-lg font-medium"
+          >💧 水辺の広場</a
+        >
+        <a
+          href="settei.html"
+          class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+          >⚙️ 設定</a
+        >
+        <a
+          href="karennda2-.html"
+          class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+          >📅 カレンダー</a
+        >
+        <a
+          href="office.html"
+          class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+          >📚 Office</a
+        >
+      </div>
+    </div>
+
+    <!-- ===== スクリプト ===== -->
+    <script>
+      const fileManager = document.getElementById("fileManager");
+      const windowTitle = document.getElementById("windowTitle");
+      const windowContent = document.getElementById("windowContent");
+      const customMenu = document.getElementById("customMenu");
+      const officeAppWindow = document.getElementById("officeAppWindow");
+      const officeWindowTitle = document.getElementById("officeWindowTitle");
+      const officeFrame = document.getElementById("officeFrame");
+      const browserWindow = document.getElementById("browserWindow");
+      const startMenu = document.getElementById("startMenu");
+
+      let currentOpenFolder = "";
+      let activeWindow = null;
+      let initialX, initialY, offsetX, offsetY;
+
+      // フォルダデータベース
+      const folderDatabase = {
+        ドキュメント: [],
+        ピクチャ: [],
+        ビデオ: [],
+        オフィス: [],
+      };
+
+      // 初期データ作成
+      function initDatabase() {
+        for (let i = 1; i <= 3; i++)
+          folderDatabase["ドキュメント"].push({
+            type: "folder",
+            name: `新しいフォルダー (${i})`,
+          });
+        for (let i = 1; i <= 3; i++)
+          folderDatabase["ドキュメント"].push({
+            type: "file",
+            name: `テキストドキュメント (${i}).txt`,
+            icon: "📝",
+          });
+        for (let i = 1; i <= 3; i++)
+          folderDatabase["ピクチャ"].push({
+            type: "file",
+            name: `思い出の写真 (${i}).jpg`,
+            icon: "🖼️",
+          });
+        for (let i = 1; i <= 3; i++)
+          folderDatabase["ビデオ"].push({
+            type: "file",
+            name: `旅の記録 (${i}).mp4`,
+            icon: "🎬",
+          });
+
+        folderDatabase["オフィス"].push({
+          type: "office-doc",
+          name: "サンプル文書.docx",
+          icon: "📝",
+          url: "https://view.officeapps.live.com/op/view.aspx?src=https://calibre-ebook.com/downloads/demos/demo.docx",
+        });
+        folderDatabase["オフィス"].push({
+          type: "office-sheet",
+          name: "サンプル表計算.xlsx",
+          icon: "📊",
+          url: "https://view.officeapps.live.com/op/view.aspx?src=https://calibre-ebook.com/downloads/demos/demo.xlsx",
+        });
+      }
+
+      // フォルダ内容描画
+      function renderContents(folderName) {
+        const items = folderDatabase[folderName];
+        if (items.length === 0) {
+          windowContent.innerHTML =
+            '<p style="color:#94a3b8; text-align:center; padding-top:20px;">このフォルダは空です。</p>';
+          return;
+        }
+        windowContent.innerHTML = items
+          .map((item) => {
+            if (item.type === "folder") {
+              return `<div class="file-item"><span style="font-size:18px;">📁</span><span>${item.name}</span></div>`;
+            } else if (item.type.startsWith("office-")) {
+              return `<div class="file-item" onclick="launchOffice('${item.name}', '${item.url}')">
+            <span style="font-size:18px; width:22px; text-align:center;">${item.icon}</span>
+            <span style="color:#7dd3fc; font-weight:500;">${item.name} (クリックして開く)</span>
+          </div>`;
+            } else {
+              return `<div class="file-item"><span style="font-size:18px; width:22px; text-align:center;">${item.icon}</span><span>${item.name}</span></div>`;
+            }
+          })
+          .join("");
+      }
+
+      // Officeファイルを開く
+      function launchOffice(fileName, url) {
+        officeWindowTitle.innerText = fileName + " - 閲覧";
+        officeFrame.src = url;
+        officeAppWindow.style.display = "flex";
+      }
+      function closeOfficeWindow() {
+        officeAppWindow.style.display = "none";
+        officeFrame.src = "";
+      }
+
+      // ブラウザウィンドウ開閉
+      function openBrowserWindow() {
+        browserWindow.style.display = "flex";
+      }
+      function closeBrowserWindow() {
+        browserWindow.style.display = "none";
+      }
+
+      // 設定を開く
+      function openSettings() {
+        window.open("settei.html", "_self");
+      }
+
+      // ファイルマネージャー開閉
+      function openWindow(folderName) {
+        currentOpenFolder = folderName;
+        windowTitle.innerText = folderName + " - ファイルマネージャー";
+        renderContents(folderName);
+        fileManager.style.display = "flex";
+      }
+      function closeWindow() {
+        fileManager.style.display = "none";
+        currentOpenFolder = "";
+      }
+
+      // 新規作成
+      function createNewFolder() {
+        if (!currentOpenFolder) return;
+        const count =
+          folderDatabase[currentOpenFolder].filter((i) => i.type === "folder")
+            .length + 1;
+        folderDatabase[currentOpenFolder].push({
+          type: "folder",
+          name: `新しいフォルダー (${count})`,
+        });
+        renderContents(currentOpenFolder);
+      }
+      function createNewFile() {
+        if (!currentOpenFolder) return;
+        const count =
+          folderDatabase[currentOpenFolder].filter((i) =>
+            i.type.includes("file"),
+          ).length + 1;
+        const conf = {
+          ドキュメント: { icon: "📝", ext: ".txt", type: "file" },
+          オフィス: {
+            icon: "📝",
+            ext: ".docx",
+            type: "office-doc",
+            url: "https://view.officeapps.live.com/op/view.aspx?src=https://calibre-ebook.com/downloads/demos/demo.docx",
+          },
+          ピクチャ: { icon: "🖼️", ext: ".jpg", type: "file" },
+          ビデオ: { icon: "🎬", ext: ".mp4", type: "file" },
+        }[currentOpenFolder];
+        folderDatabase[currentOpenFolder].push({
+          type: conf.type,
+          name: `新規作成ファイル (${count})${conf.ext}`,
+          icon: conf.icon,
+          url: conf.url || "",
+        });
+        renderContents(currentOpenFolder);
+      }
+
+      // スタートメニュー開閉
+      function toggleMenu() {
+        startMenu.classList.toggle("opacity-0");
+        startMenu.classList.toggle("scale-95");
+      }
+
+      // 時計表示
+      function updateTime() {
+        const now = new Date();
+        const timeStr =
+          now.getFullYear() +
+          "/" +
+          String(now.getMonth() + 1).padStart(2, "0") +
+          "/" +
+          String(now.getDate()).padStart(2, "0") +
+          " " +
+          String(now.getHours()).padStart(2, "0") +
+          ":" +
+          String(now.getMinutes()).padStart(2, "0");
+        document.getElementById("currentTime").innerText = timeStr;
+      }
+      updateTime();
+      setInterval(updateTime, 60000);
+
+      // ウィンドウドラッグ機能
+      document.querySelectorAll(".window-header").forEach((header) => {
+        header.addEventListener("mousedown", (e) => {
+          activeWindow = header.parentElement;
+          initialX = e.clientX;
+          initialY = e.clientY;
+          offsetX = activeWindow.getBoundingClientRect().left;
+          offsetY = activeWindow.getBoundingClientRect().top;
+          activeWindow.style.zIndex = 300;
+          // 他のウィンドウを背面に
+          document
+            .querySelectorAll(".window, .office-window, .browser-window")
+            .forEach((w) => {
+              if (w !== activeWindow) w.style.zIndex = 200;
+            });
+        });
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        if (!activeWindow) return;
+        const dx = e.clientX - initialX;
+        const dy = e.clientY - initialY;
+        activeWindow.style.left = `${offsetX + dx}px`;
+        activeWindow.style.top = `${offsetY + dy}px`;
+      });
+
+      document.addEventListener("mouseup", () => {
+        activeWindow = null;
+      });
+
+      // イベント設定
+      document.addEventListener("click", (e) => {
+        customMenu.style.display = "none";
+        // スタートメニュー外クリックで閉じる
+        if (
+          !startMenu.contains(e.target) &&
+          !e.target.matches('button[onclick="toggleMenu()"]')
+        ) {
+          startMenu.classList.add("opacity-0", "scale-95");
+        }
+      });
+      document.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        customMenu.style.left = e.pageX + "px";
+        customMenu.style.top = e.pageY + "px";
+        customMenu.style.display = "block";
+      });
+
+      // 初期化実行
+      initDatabase();
+    </script>
+  </body>
+</html>

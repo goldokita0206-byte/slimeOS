@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web OS - LibreOffice Style</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Roboto, sans-serif;
+      }
+      body {
+        overflow: hidden;
+      }
+      #desktop {
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #005599, #4a90e2);
+        position: relative;
+      }
+      #taskbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        background: #2c3e50;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        gap: 8px;
+        z-index: 999;
+      }
+      #start-btn {
+        padding: 8px 16px;
+        cursor: pointer;
+        background: #005599;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 15px;
+      }
+      #start-btn:hover {
+        background: #0066bb;
+      }
+      #start-menu {
+        position: fixed;
+        left: 10px;
+        bottom: 55px;
+        width: 240px;
+        background: #ffffff;
+        border-radius: 6px;
+        padding: 12px;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
+        display: none;
+        z-index: 1000;
+      }
+      #start-menu h3 {
+        font-size: 14px;
+        color: #2c3e50;
+        margin: 8px 0 6px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid #eee;
+      }
+      #start-menu button {
+        width: 100%;
+        margin: 4px 0;
+        padding: 10px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        background: #f8f9fa;
+        text-align: left;
+        font-size: 14px;
+      }
+      #start-menu button:hover {
+        background: #e3f2fd;
+        color: #005599;
+      }
+      .window {
+        position: absolute;
+        width: 600px;
+        height: 450px;
+        background: #fff;
+        border-radius: 6px;
+        overflow: hidden;
+        display: none;
+        top: 60px;
+        left: 60px;
+        box-shadow: 0 3px 20px rgba(0, 0, 0, 0.4);
+        z-index: 10;
+      }
+      .title-bar {
+        background: #005599;
+        color: white;
+        height: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 12px;
+        cursor: move;
+        user-select: none;
+        font-size: 15px;
+        font-weight: 500;
+      }
+      .title-bar button {
+        width: 32px;
+        height: 32px;
+        border: none;
+        background: #dc3545;
+        color: white;
+        cursor: pointer;
+        border-radius: 3px;
+        font-size: 18px;
+      }
+      .title-bar button:hover {
+        background: #c82333;
+      }
+      .toolbar {
+        background: #f1f3f4;
+        border-bottom: 1px solid #ddd;
+        padding: 6px 8px;
+        display: flex;
+        gap: 6px;
+      }
+      .toolbar button {
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        background: #fff;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 13px;
+      }
+      .toolbar button:hover {
+        background: #e9ecef;
+      }
+      textarea {
+        width: 100%;
+        height: calc(100% - 86px);
+        border: none;
+        resize: none;
+        padding: 12px;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+      .content {
+        padding: 15px;
+        height: calc(100% - 86px);
+        overflow: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      table th,
+      table td {
+        border: 1px solid #ccc;
+        padding: 6px 8px;
+        text-align: left;
+      }
+      table th {
+        background: #f1f3f4;
+      }
+      input {
+        width: 100%;
+        border: none;
+        outline: none;
+        padding: 2px;
+      }
+      .calc-area {
+        padding: 15px;
+        height: calc(100% - 40px);
+      }
+      #calc-display {
+        width: 100%;
+        height: 50px;
+        font-size: 26px;
+        margin-bottom: 15px;
+        padding: 0 10px;
+        text-align: right;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #f8f9fa;
+      }
+      .calc-buttons {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .calc-buttons button {
+        height: 55px;
+        font-size: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: #f8f9fa;
+        cursor: pointer;
+      }
+      .calc-buttons button:hover {
+        background: #e9ecef;
+      }
+      .clock-area {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: calc(100% - 40px);
+        font-size: 64px;
+        color: #2c3e50;
+      }
+      .taskbar-btn {
+        background: #34495e;
+        color: white;
+        border: none;
+        padding: 6px 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .taskbar-btn:hover {
+        background: #3d566e;
+      }
+      .taskbar-btn.active {
+        background: #005599;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="desktop">
+      <!-- 📝 Word / LibreOffice Writer -->
+      <div id="writer" class="window">
+        <div class="title-bar">
+          <span>📝 Word (Writer)</span>
+          <button onclick="closeWindow('writer')">×</button>
+        </div>
+        <div class="toolbar">
+          <button>保存</button>
+          <button>印刷</button>
+          <button>太字</button>
+          <button>斜体</button>
+          <button>下線</button>
+        </div>
+        <textarea placeholder="文書を入力してください..."></textarea>
+      </div>
+
+      <!-- 📊 Excel / LibreOffice Calc -->
+      <div id="calc" class="window">
+        <div class="title-bar">
+          <span>📊 Excel (Calc)</span>
+          <button onclick="closeWindow('calc')">×</button>
+        </div>
+        <div class="toolbar">
+          <button>保存</button>
+          <button>合計</button>
+          <button>並べ替え</button>
+        </div>
+        <div class="content">
+          <table>
+            <tr>
+              <th></th>
+              <th>A</th>
+              <th>B</th>
+              <th>C</th>
+              <th>D</th>
+            </tr>
+            <tr>
+              <th>1</th>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+            </tr>
+            <tr>
+              <th>4</th>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+              <td><input type="text" /></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 📽️ PowerPoint / LibreOffice Impress -->
+      <div id="impress" class="window">
+        <div class="title-bar">
+          <span>📽️ PowerPoint (Impress)</span>
+          <button onclick="closeWindow('impress')">×</button>
+        </div>
+        <div class="toolbar">
+          <button>新規スライド</button>
+          <button>保存</button>
+          <button>プレビュー</button>
+        </div>
+        <div class="content">
+          <p style="margin-bottom: 8px">
+            タイトル：<input
+              type="text"
+              style="
+                width: 85%;
+                padding: 6px;
+                border: 1px solid #ccc;
+                border-radius: 3px;
+              "
+            />
+          </p>
+          <textarea
+            placeholder="スライドの内容を入力..."
+            style="height: 260px"
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- メモ帳 -->
+      <div id="notepad" class="window">
+        <div class="title-bar">
+          <span>📝 メモ帳</span>
+          <button onclick="closeWindow('notepad')">×</button>
+        </div>
+        <textarea placeholder="メモを入力..."></textarea>
+      </div>
+
+      <!-- 電卓 -->
+      <div id="calculator" class="window">
+        <div class="title-bar">
+          <span>🧮 電卓</span>
+          <button onclick="closeWindow('calculator')">×</button>
+        </div>
+        <div class="calc-area">
+          <input id="calc-display" readonly />
+          <div class="calc-buttons">
+            <button onclick="add('7')">7</button>
+            <button onclick="add('8')">8</button>
+            <button onclick="add('9')">9</button>
+            <button onclick="add('/')">÷</button>
+            <button onclick="add('4')">4</button>
+            <button onclick="add('5')">5</button>
+            <button onclick="add('6')">6</button>
+            <button onclick="add('*')">×</button>
+            <button onclick="add('1')">1</button>
+            <button onclick="add('2')">2</button>
+            <button onclick="add('3')">3</button>
+            <button onclick="add('-')">−</button>
+            <button onclick="add('0')">0</button>
+            <button onclick="calculate()">=</button>
+            <button onclick="clearCalc()">C</button>
+            <button onclick="add('+')">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 時計 -->
+      <div id="clockWindow" class="window">
+        <div class="title-bar">
+          <span>🕒 時計</span>
+          <button onclick="closeWindow('clockWindow')">×</button>
+        </div>
+        <div class="clock-area" id="clock"></div>
+      </div>
+    </div>
+
+    <!-- スタートメニュー -->
+    <div id="start-menu">
+      <h3>Office アプリ</h3>
+      <button onclick="openWindow('writer')">📝 Word</button>
+      <button onclick="openWindow('calc')">📊 Excel</button>
+      <button onclick="openWindow('impress')">📽️ PowerPoint</button>
+      <h3>ツール</h3>
+      <button onclick="openWindow('notepad')">📝 メモ帳</button>
+      <button onclick="openWindow('calculator')">🧮 電卓</button>
+      <button onclick="openWindow('clockWindow')">🕒 時計</button>
+    </div>
+
+    <div id="taskbar">
+      <button id="start-btn">スタート</button>
+      <div id="window-buttons"></div>
+    </div>
+
+    <script>
+      const startBtn = document.getElementById("start-btn");
+      const startMenu = document.getElementById("start-menu");
+      const windowButtonsContainer = document.getElementById("window-buttons");
+      let zIndexCounter = 20;
+
+      // スタートメニュー開閉
+      startBtn.addEventListener("click", () => {
+        startMenu.style.display =
+          startMenu.style.display === "block" ? "none" : "block";
+      });
+
+      // ウィンドウを開く
+      function openWindow(id) {
+        const win = document.getElementById(id);
+        win.style.display = "block";
+        bringToFront(win);
+        updateTaskbarButtons();
+        startMenu.style.display = "none";
+      }
+
+      // ウィンドウを閉じる
+      function closeWindow(id) {
+        document.getElementById(id).style.display = "none";
+        updateTaskbarButtons();
+      }
+
+      // 最前面へ
+      function bringToFront(win) {
+        win.style.zIndex = zIndexCounter++;
+      }
+
+      // タスクバー更新
+      function updateTaskbarButtons() {
+        windowButtonsContainer.innerHTML = "";
+        document.querySelectorAll(".window").forEach((win) => {
+          if (win.style.display === "block") {
+            const btn = document.createElement("button");
+            btn.className = "taskbar-btn";
+            btn.textContent = win.querySelector(".title-bar span").textContent;
+            btn.onclick = () => bringToFront(win);
+            windowButtonsContainer.appendChild(btn);
+          }
+        });
+      }
+
+      // 電卓機能
+      function add(v) {
+        document.getElementById("calc-display").value += v;
+      }
+      function clearCalc() {
+        document.getElementById("calc-display").value = "";
+      }
+      function calculate() {
+        try {
+          const disp = document.getElementById("calc-display");
+          disp.value = eval(disp.value);
+        } catch {
+          document.getElementById("calc-display").value = "エラー";
+        }
+      }
+
+      // 時計更新
+      function updateClock() {
+        const now = new Date();
+        document.getElementById("clock").textContent =
+          now.toLocaleTimeString("ja-JP");
+      }
+      setInterval(updateClock, 1000);
+      updateClock();
+
+      // ドラッグ移動
+      let activeWindow = null,
+        offsetX = 0,
+        offsetY = 0;
+      document.querySelectorAll(".title-bar").forEach((bar) => {
+        bar.addEventListener("mousedown", (e) => {
+          activeWindow = bar.parentElement;
+          offsetX = e.clientX - activeWindow.offsetLeft;
+          offsetY = e.clientY - activeWindow.offsetTop;
+          bringToFront(activeWindow);
+        });
+      });
+      document.addEventListener("mousemove", (e) => {
+        if (activeWindow) {
+          activeWindow.style.left = `${e.clientX - offsetX}px`;
+          activeWindow.style.top = `${e.clientY - offsetY}px`;
+        }
+      });
+      document.addEventListener("mouseup", () => (activeWindow = null));
+
+      // メニュー外クリックで閉じる
+      document.addEventListener("click", (e) => {
+        if (!startMenu.contains(e.target) && e.target !== startBtn) {
+          startMenu.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>

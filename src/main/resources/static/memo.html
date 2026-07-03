@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>メモ帳 - Slime OS</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+    body {
+      background: url("suraimu mori.png") no-repeat center;
+      background-size: cover;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2d3748;
+      margin-bottom: 1.5rem;
+    }
+    .btn {
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #9C27B0;
+      color: white;
+      margin-bottom: 1rem;
+      margin-right: 0.5rem;
+    }
+    textarea {
+      width: 100%;
+      height: 60vh;
+      padding: 1rem;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.8);
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📝 メモ帳</h2>
+    <button class="btn" onclick="saveMemo()">💾 保存</button>
+    <button class="btn" onclick="clearMemo()">🗑️ クリア</button>
+    <textarea id="memo" placeholder="ここにメモを入力してください..."></textarea>
+  </div>
+
+  <script>
+    const memo = document.getElementById('memo');
+    // 前回の内容を読み込み
+    memo.value = localStorage.getItem('slimeMemo') || '';
+    // 保存
+    function saveMemo() {
+      localStorage.setItem('slimeMemo', memo.value);
+      alert('✅ メモを保存しました');
+    }
+    // クリア
+    function clearMemo() {
+      if(confirm('⚠️ メモを消去しますか？')) {
+        memo.value = '';
+        localStorage.removeItem('slimeMemo');
+      }
+    }
+  </script>
+</body>
+</html>

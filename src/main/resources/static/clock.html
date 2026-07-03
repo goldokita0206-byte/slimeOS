@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>時計 - Slime OS</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+    body {
+      background: url("suraimu mori.png") no-repeat center;
+      background-size: cover;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .clock-box {
+      text-align: center;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      padding: 3rem 5rem;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    #time {
+      font-size: 4rem;
+      font-weight: bold;
+      color: #2d3748;
+      margin-bottom: 1rem;
+    }
+    #date {
+      font-size: 1.5rem;
+      color: #4a5568;
+    }
+  </style>
+</head>
+<body>
+  <div class="clock-box">
+    <div id="time"></div>
+    <div id="date"></div>
+  </div>
+
+  <script>
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('time').textContent = now.toLocaleTimeString('ja-JP');
+      document.getElementById('date').textContent = now.toLocaleDateString('ja-JP', {
+        year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
+      });
+    }
+    updateClock();
+    setInterval(updateClock, 1000); // 1秒ごと更新
+  </script>
+</body>
+</html>

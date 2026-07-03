@@ -1,0 +1,1063 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>スライムの森 カレンダー＆メール</title>
+    <style>
+      /* ===== 基本設定 ===== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: url("01.png") center / cover no-repeat fixed;
+        position: relative;
+        min-height: 100vh;
+        font-family: "メイリオ", Meiryo, "MS Pゴシック", sans-serif;
+        color: #0f0125;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(255, 255, 255, 0);
+        z-index: 0;
+      }
+      .content {
+        position: relative;
+        z-index: 1;
+        padding: 20px 10px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      /* ===== 🏠 ホームに戻るボタン ===== */
+      .home-button {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 9999;
+        background: rgba(255, 255, 255, 0.35);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        color: #3208eb;
+        font-weight: bold;
+        padding: 10px 16px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 12px rgba(38, 166, 154, 0.15);
+        transition: all 0.25s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .home-button:hover {
+        background: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(38, 166, 154, 0.25);
+        color: #0717f1;
+      }
+
+      /* ===== 2分割レイアウト ===== */
+      .layout-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        .layout-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ===== アニメーション ===== */
+      @keyframes floatSink {
+        0%,
+        100% {
+          transform: translateY(0) scale(0.95);
+          opacity: 0.8;
+        }
+        50% {
+          transform: translateY(-15px) scale(1.05);
+          opacity: 1;
+        }
+      }
+      @keyframes wiggle {
+        0%,
+        100% {
+          transform: rotate(-3deg);
+        }
+        50% {
+          transform: rotate(3deg);
+        }
+      }
+      @keyframes drift {
+        0% {
+          transform: translate(0, 0);
+        }
+        25% {
+          transform: translate(10px, -8px);
+        }
+        50% {
+          transform: translate(0, -15px);
+        }
+        75% {
+          transform: translate(-10px, -8px);
+        }
+        100% {
+          transform: translate(0, 0);
+        }
+      }
+      .animate-float {
+        animation: floatSink 4s ease-in-out infinite;
+      }
+      .animate-wiggle {
+        animation: wiggle 3s ease-in-out infinite;
+      }
+      .animate-drift {
+        animation: drift 8s linear infinite;
+      }
+
+      /* ===== 共通スタイル ===== */
+      .text-shadow-sm {
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .slime-shadow {
+        box-shadow: 0 8px 20px rgba(38, 166, 154, 0.2);
+      }
+      .rounded-3xl {
+        border-radius: 24px;
+      }
+      .rounded-full {
+        border-radius: 50%;
+      }
+      .rounded-xl {
+        border-radius: 16px;
+      }
+
+      .slime-bg {
+        background:
+          radial-gradient(
+            circle at 30% 30%,
+            rgba(255, 255, 255, 0.26),
+            transparent 70%
+          ),
+          linear-gradient(135deg, #e0f7fa 0%, #80deea25 100%);
+      }
+      .bg-white-70 {
+        background-color: rgba(255, 255, 255, 0.425);
+      }
+      .bg-slime-light {
+        background-color: rgba(224, 247, 250, 0.3);
+      }
+      .bg-slime-main {
+        background-color: #80deea;
+      }
+      .bg-slime-dark {
+        background-color: #26a69a;
+      }
+
+      .text-slime-dark {
+        color: #3208eb;
+      }
+      .text-red {
+        color: #f30707;
+      }
+      .text-blue {
+        color: hsl(239, 90%, 49%);
+      }
+      .text-gray {
+        color: #6b7280;
+      }
+      .text-white {
+        color: #ffffffef;
+      }
+
+      /* ===== カレンダースタイル ===== */
+      .flex {
+        display: flex;
+      }
+      .justify-between {
+        justify-content: space-between;
+      }
+      .items-center {
+        align-items: center;
+      }
+      .grid {
+        display: grid;
+      }
+      .grid-cols-7 {
+        grid-template-columns: repeat(7, 1fr);
+      }
+      .gap-2 {
+        gap: 8px;
+      }
+      .p-6 {
+        padding: 24px;
+      }
+      .p-4 {
+        padding: 16px;
+      }
+      .p-2 {
+        padding: 8px;
+      }
+      .mb-6 {
+        margin-bottom: 24px;
+      }
+      .mb-4 {
+        margin-bottom: 16px;
+      }
+      .mb-2 {
+        margin-bottom: 8px;
+      }
+      .mt-4 {
+        margin-top: 16px;
+      }
+      .text-center {
+        text-align: center;
+      }
+      .font-bold {
+        font-weight: bold;
+      }
+      .text-2xl {
+        font-size: 1.5rem;
+      }
+      .text-3xl {
+        font-size: 1.8rem;
+      }
+      .text-5xl {
+        font-size: 3rem;
+      }
+      .text-lg {
+        font-size: 1.1rem;
+      }
+      .text-sm {
+        font-size: 0.9rem;
+      }
+      .w-full {
+        width: 100%;
+      }
+
+      /* 日付セル */
+      .day-cell {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+      }
+      .day-cell:hover {
+        background-color: rgba(224, 247, 250, 0.11);
+        transform: scale(1.05);
+      }
+      .day-cell.today {
+        border: 2px solid #ee0e0e;
+        background-color: rgba(255, 230, 230, 0.123);
+      }
+      .day-cell.has-memo::after {
+        content: "●";
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        font-size: 10px;
+        color: #26a69a;
+      }
+
+      /* 浮遊スライム */
+      .slime-particle {
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        background: url("./image1.png") center / contain no-repeat;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .slime-icon-lg {
+        width: 48px;
+        height: 48px;
+        background: url("./slime.png") center / contain no-repeat;
+        display: inline-block;
+      }
+
+      /* ===== メモモーダル ===== */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transition: 0.3s;
+      }
+      .modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+      }
+      .modal-content {
+        background: rgba(255, 255, 255, 0.932);
+        width: 90%;
+        max-width: 420px;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        transform: translateY(20px);
+        transition: 0.3s;
+      }
+      .modal-overlay.show .modal-content {
+        transform: translateY(0);
+      }
+      .modal-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #560ddd;
+        margin-bottom: 12px;
+      }
+      .memo-textarea {
+        width: 100%;
+        height: 120px;
+        padding: 12px;
+        border: 1px solid rgba(38, 166, 153, 0.007);
+        border-radius: 12px;
+        resize: none;
+        font-size: 0.95rem;
+        font-family: inherit;
+        background: rgba(255, 255, 255, 0.932);
+      }
+      .memo-textarea:focus {
+        outline: none;
+        border-color: #26a69a;
+        box-shadow: 0 0 0 2px rgba(243, 248, 248, 0.966);
+      }
+      .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 16px;
+      }
+      .btn {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: none;
+        font-weight: 500;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .btn-close {
+        background: #e5e7eb36;
+        color: #4b5563;
+      }
+      .btn-close:hover {
+        background: #d1d5db1a;
+      }
+      .btn-save {
+        background: #0717f1;
+        color: rgba(255, 255, 255, 0.897);
+      }
+      .btn-save:hover {
+        background: hsl(180, 12%, 92%);
+      }
+
+      /* ===== メール画面 ===== */
+      .mail-box {
+        background: rgba(255, 255, 255, 0.397);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 8px 20px rgba(38, 166, 154, 0.2);
+        border: 2px solid rgba(224, 247, 250, 0.5);
+        backdrop-filter: blur(8px);
+      }
+      .mail-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #4c26a6;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .mail-input {
+        width: 100%;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+        border: 1px solid rgba(2, 0, 19, 0.863);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-family: inherit;
+        background: rgba(255, 255, 255, 0.014);
+      }
+      .mail-input:focus {
+        outline: none;
+        border-color: #26a69a;
+        box-shadow: 0 0 0 2px rgba(38, 166, 154, 0.1);
+      }
+      .mail-textarea {
+        width: 100%;
+        height: 330px;
+        padding: 14px;
+        margin-bottom: 18px;
+        border: 1px solid rgba(0, 0, 5, 0.911);
+        border-radius: 10px;
+        resize: none;
+        font-size: 0.95rem;
+        font-family: inherit;
+        background: rgba(255, 255, 255, 0.007);
+      }
+      .mail-textarea:focus {
+        outline: none;
+        border-color: #26a69a;
+        box-shadow: 0 0 0 2px rgba(38, 166, 154, 0.1);
+      }
+      .mail-buttons {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+      }
+      .btn-send {
+        background: #26a69a;
+        color: rgba(255, 255, 255, 0.959);
+        padding: 10px 24px;
+        border-radius: 12px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn-send:hover {
+        background: #00897b;
+        transform: translateY(-1px);
+      }
+      .btn-clear {
+        background: #e5e7eb00;
+        color: #4b5563;
+        padding: 10px 20px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .btn-clear:hover {
+        background: #d1d5db02;
+      }
+      .mail-history {
+        margin-top: 24px;
+        border-top: 1px solid rgba(38, 166, 154, 0.2);
+        padding-top: 16px;
+      }
+      .history-title {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #3d26a6;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .history-item {
+        background: rgba(224, 247, 250, 0.4);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        font-size: 0.85rem;
+        border-left: 3px solid #6f12e7;
+      }
+      .history-subject {
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+      .history-time {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-align: right;
+      }
+    </style>
+    <!-- シャボン玉アニメーション用 -->
+    <style>
+      /* シャボン玉のコンテナ：画面全体に重ねて表示 */
+      .bubble-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none; /* クリックなどを透過して下のアイコンが使える */
+        z-index: 5; /* 背景より上、アイコンより下に調整可 */
+      }
+
+      /* シャボン玉本体 */
+      .bubble {
+        position: absolute;
+        bottom: -50px; /* 画面外下から出現 */
+        background: rgba(255, 255, 255, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        box-shadow:
+          inset 0 0 8px rgba(255, 255, 255, 0.3),
+          0 0 12px rgba(173, 216, 230, 0.4);
+        animation: rise 8s linear infinite;
+      }
+
+      /* 上昇＋ゆらぎ＋消えるアニメーション */
+      @keyframes rise {
+        0% {
+          transform: translateY(0) translateX(0) scale(0.5);
+          opacity: 0;
+        }
+        10% {
+          opacity: 0.8;
+        }
+        90% {
+          opacity: 0.6;
+        }
+        100% {
+          transform: translateY(-110vh)
+            translateX(calc(-50px + 100px * var(--drift))) scale(1.1);
+          opacity: 0;
+        }
+      }
+    </style>
+
+    <!-- シャボン玉を生成するJavaScript -->
+    <script>
+      function createBubble() {
+        const container = document.querySelector(".bubble-container");
+        if (!container) return;
+
+        // ランダムな大きさ・位置・速度・揺れ幅
+        const size = Math.random() * 30 + 15; // 15px～45px
+        const bubble = document.createElement("div");
+        bubble.classList.add("bubble");
+
+        // スタイルをランダム設定
+        bubble.style.width = size + "px";
+        bubble.style.height = size + "px";
+        bubble.style.left = Math.random() * 100 + "%";
+        bubble.style.animationDuration = Math.random() * 4 + 6 + "s"; // 6～10秒で上昇
+        bubble.style.animationDelay = Math.random() * 2 + "s";
+        bubble.style.setProperty("--drift", Math.random()); // 左右の揺れ
+
+        container.appendChild(bubble);
+
+        // アニメーション終了後に要素を削除
+        setTimeout(() => bubble.remove(), 12000);
+      }
+
+      // ページ読み込み後、一定間隔でシャボン玉を生成
+      window.addEventListener("load", () => {
+        // コンテナがなければ作成
+        if (!document.querySelector(".bubble-container")) {
+          const bubbleArea = document.createElement("div");
+          bubbleArea.classList.add("bubble-container");
+          document.body.appendChild(bubbleArea);
+        }
+        // 0.3秒ごとに1つ生成
+        setInterval(createBubble, 300);
+      });
+    </script>
+  </head>
+  <body>
+    <!-- 🏠 ホームに戻るボタン -->
+    <a href="slime.html" class="home-button"> 🏠 ホームに戻る </a>
+
+    <div class="content">
+      <!-- 🫧 散らばった小さなスライムたち -->
+      <div
+        class="slime-particle"
+        style="top: 10%; left: 15%; animation: floatSink 4s infinite"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 25%; left: 80%; animation: floatSink 4s infinite 0.5s"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 40%; left: 10%; animation: floatSink 4s infinite 1s"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 60%; left: 85%; animation: floatSink 4s infinite 1.5s"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 75%; left: 20%; animation: floatSink 4s infinite 2s"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 15%; left: 40%; animation: drift 8s infinite"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 50%; left: 60%; animation: drift 8s infinite 0.7s"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 80%; left: 50%; animation: wiggle 3s infinite"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 35%; left: 25%; animation: wiggle 3s infinite 2.2s"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 65%; left: 70%; animation: floatSink 4s infinite 0.8s"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 5%; left: 65%; animation: drift 8s infinite 1.8s"
+      ></div>
+      <div
+        class="slime-particle"
+        style="top: 90%; left: 35%; animation: floatSink 4s infinite 2.5s"
+      ></div>
+
+      <!-- 森の装飾 -->
+      <div
+        style="
+          position: absolute;
+          bottom: 0;
+          left: 10px;
+          font-size: 2rem;
+          color: #A5D6A7/40;
+        "
+      >
+        🌳
+      </div>
+      <div
+        style="
+          position: absolute;
+          bottom: 0;
+          left: 25%;
+          font-size: 1.8rem;
+          color: #A5D6A7/30;
+        "
+      >
+        🌲
+      </div>
+      <div
+        style="
+          position: absolute;
+          bottom: 0;
+          right: 33%;
+          font-size: 1.6rem;
+          color: #A5D6A7/35;
+        "
+      >
+        🌳
+      </div>
+      <div
+        style="
+          position: absolute;
+          bottom: 0;
+          right: 20px;
+          font-size: 2rem;
+          color: #A5D6A7/40;
+        "
+      >
+        🌲
+      </div>
+      <div
+        style="
+          position: absolute;
+          bottom: 10px;
+          left: 50%;
+          font-size: 1.2rem;
+          color: #f472b6/60;
+        "
+      >
+        🌸
+      </div>
+      <div
+        style="
+          position: absolute;
+          bottom: 5px;
+          left: 66%;
+          font-size: 1rem;
+          color: #ef4444/50;
+        "
+      >
+        🍄
+      </div>
+      <div
+        style="
+          position: absolute;
+          top: 33%;
+          left: 20px;
+          font-size: 1rem;
+          color: #facc15/50;
+        "
+      >
+        🌼
+      </div>
+
+      <!-- メイン2分割レイアウト -->
+      <div class="layout-grid">
+        <!-- ========== 左：カレンダー ========== -->
+        <div>
+          <h1
+            class="text-3xl font-bold text-center text-slime-dark mb-6 text-shadow-sm"
+          >
+            🍃 スライムの森 カレンダー
+          </h1>
+
+          <!-- 日時表示エリア -->
+          <div class="slime-bg rounded-3xl p-6 slime-shadow mb-6">
+            <div class="text-center">
+              <div
+                id="time-display"
+                class="text-5xl font-bold text-slime-dark mb-2 text-shadow-sm"
+              >
+                --:--:--
+              </div>
+              <div
+                id="date-display"
+                class="text-lg text-slime-dark/80 font-medium"
+              >
+                ----年--月--日 --曜日
+              </div>
+            </div>
+          </div>
+
+          <!-- カレンダー本体 -->
+          <div
+            class="bg-white-70 rounded-3xl p-6 slime-shadow"
+            style="border: 2px solid rgba(224, 247, 250, 0.5)"
+          >
+            <!-- 年月ナビゲーション -->
+            <div class="flex justify-between items-center mb-4">
+              <button
+                id="prev-month"
+                class="text-slime-dark text-xl p-2 rounded-full bg-slime-light hover:bg-slime-main transition-colors"
+              >
+                ◀
+              </button>
+              <h2 id="current-month" class="text-2xl font-bold text-slime-dark">
+                ----年 --月
+              </h2>
+              <button
+                id="next-month"
+                class="text-slime-dark text-xl p-2 rounded-full bg-slime-light hover:bg-slime-main transition-colors"
+              >
+                ▶
+              </button>
+            </div>
+
+            <!-- 曜日ヘッダー -->
+            <div class="grid grid-cols-7 mb-2 text-center">
+              <div class="text-red font-medium text-sm">日</div>
+              <div class="text-gray font-medium text-sm">月</div>
+              <div class="text-gray font-medium text-sm">火</div>
+              <div class="text-gray font-medium text-sm">水</div>
+              <div class="text-gray font-medium text-sm">木</div>
+              <div class="text-gray font-medium text-sm">金</div>
+              <div class="text-blue font-medium text-sm">土</div>
+            </div>
+
+            <!-- 日付グリッド -->
+            <div
+              id="days-grid"
+              class="grid grid-cols-7 gap-2 text-center"
+            ></div>
+
+            <!-- 中心の大きなスライム -->
+            <div class="mt-6 text-center relative">
+              <div class="slime-icon-lg animate-float"></div>
+              <span
+                class="absolute"
+                style="
+                  top: -8px;
+                  right: -16px;
+                  font-size: 1.2rem;
+                  animation: wiggle 3s infinite;
+                "
+                >🫧</span
+              >
+              <span
+                class="absolute"
+                style="
+                  bottom: -8px;
+                  left: -16px;
+                  font-size: 1.2rem;
+                  animation: wiggle 3s infinite 0.5s;
+                "
+                >🫧</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== 右：メール画面 ========== -->
+        <div>
+          <div class="mail-box">
+            <h2 class="mail-title">✉️ 簡易メール</h2>
+
+            <input
+              type="email"
+              id="mailTo"
+              class="mail-input"
+              placeholder="宛先メールアドレス"
+            />
+            <input
+              type="text"
+              id="mailSubject"
+              class="mail-input"
+              placeholder="件名"
+            />
+            <textarea
+              id="mailBody"
+              class="mail-textarea"
+              placeholder="本文を入力してください..."
+            ></textarea>
+
+            <div class="mail-buttons">
+              <button id="clearMail" class="btn-clear">クリア</button>
+              <button id="sendMail" class="btn-send">📤 送信</button>
+            </div>
+
+            <div class="mail-history">
+              <h3 class="history-title">📋 送信履歴</h3>
+              <div id="mailHistoryList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== メモ入力モーダル ===== -->
+    <div id="memoModal" class="modal-overlay">
+      <div class="modal-content">
+        <h3 id="memoTitle" class="modal-title"></h3>
+        <textarea
+          id="memoInput"
+          class="memo-textarea"
+          placeholder="予定やメモを記入... 自動保存されます"
+        ></textarea>
+        <div class="modal-buttons">
+          <button id="closeBtn" class="btn btn-close">閉じる</button>
+          <button id="saveBtn" class="btn btn-save">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ========== カレンダー＆メモ機能 ==========
+      let currentDate = new Date();
+      const today = new Date();
+      let selectedDateKey = "";
+
+      const timeDisplay = document.getElementById("time-display");
+      const dateDisplay = document.getElementById("date-display");
+      const currentMonthEl = document.getElementById("current-month");
+      const daysGridEl = document.getElementById("days-grid");
+      const prevMonthBtn = document.getElementById("prev-month");
+      const nextMonthBtn = document.getElementById("next-month");
+      const memoModal = document.getElementById("memoModal");
+      const memoTitle = document.getElementById("memoTitle");
+      const memoInput = document.getElementById("memoInput");
+      const closeBtn = document.getElementById("closeBtn");
+      const saveBtn = document.getElementById("saveBtn");
+
+      const weekdays = [
+        "日曜日",
+        "月曜日",
+        "火曜日",
+        "水曜日",
+        "木曜日",
+        "金曜日",
+        "土曜日",
+      ];
+      const MEMO_STORAGE = "slimeCalendarMemos";
+
+      function getMemos() {
+        return JSON.parse(localStorage.getItem(MEMO_STORAGE) || "{}");
+      }
+      function saveMemo(key, content) {
+        const memos = getMemos();
+        if (!content.trim()) delete memos[key];
+        else memos[key] = content.trim();
+        localStorage.setItem(MEMO_STORAGE, JSON.stringify(memos));
+        renderCalendar();
+      }
+
+      function updateTime() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, "0");
+        const m = String(now.getMinutes()).padStart(2, "0");
+        const s = String(now.getSeconds()).padStart(2, "0");
+        timeDisplay.textContent = `${h}:${m}:${s}`;
+        const y = now.getFullYear(),
+          mo = now.getMonth() + 1,
+          d = now.getDate(),
+          dw = now.getDay();
+        dateDisplay.textContent = `${y}年${mo}月${d}日 ${weekdays[dw]}`;
+      }
+
+      function renderCalendar() {
+        const memos = getMemos();
+        const y = currentDate.getFullYear(),
+          mo = currentDate.getMonth();
+        currentMonthEl.textContent = `${y}年 ${mo + 1}月`;
+        const firstDay = new Date(y, mo, 1).getDay();
+        const daysInMonth = new Date(y, mo + 1, 0).getDate();
+        const daysInPrevMonth = new Date(y, mo, 0).getDate();
+        daysGridEl.innerHTML = "";
+
+        for (let i = firstDay - 1; i >= 0; i--) {
+          const el = document.createElement("div");
+          el.className = "day-cell text-gray";
+          el.textContent = daysInPrevMonth - i;
+          daysGridEl.appendChild(el);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateKey = `${y}-${mo + 1}-${day}`;
+          const el = document.createElement("div");
+          el.className = "day-cell";
+          el.textContent = day;
+          el.dataset.key = dateKey;
+          el.dataset.label = `${y}年${mo + 1}月${day}日`;
+          const dw = new Date(y, mo, day).getDay();
+          if (dw === 0) el.classList.add("text-red");
+          if (dw === 6) el.classList.add("text-blue");
+          if (
+            y === today.getFullYear() &&
+            mo === today.getMonth() &&
+            day === today.getDate()
+          )
+            el.classList.add("today");
+          if (memos[dateKey]) el.classList.add("has-memo");
+
+          el.addEventListener("click", () => {
+            selectedDateKey = dateKey;
+            memoTitle.textContent = `${el.dataset.label} のメモ`;
+            memoInput.value = memos[dateKey] || "";
+            memoModal.classList.add("show");
+            setTimeout(() => memoInput.focus(), 100);
+          });
+          daysGridEl.appendChild(el);
+        }
+
+        const rest = 42 - daysGridEl.children.length;
+        for (let i = 1; i <= rest; i++) {
+          const el = document.createElement("div");
+          el.className = "day-cell text-gray";
+          el.textContent = i;
+          daysGridEl.appendChild(el);
+        }
+      }
+
+      closeBtn.addEventListener("click", () =>
+        memoModal.classList.remove("show"),
+      );
+      saveBtn.addEventListener("click", () => {
+        saveMemo(selectedDateKey, memoInput.value);
+        memoModal.classList.remove("show");
+      });
+      memoModal.addEventListener("click", (e) => {
+        if (e.target === memoModal) memoModal.classList.remove("show");
+      });
+      prevMonthBtn.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar();
+      });
+      nextMonthBtn.addEventListener("click", () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
+      });
+
+      // ========== メール機能 ==========
+      const mailTo = document.getElementById("mailTo");
+      const mailSubject = document.getElementById("mailSubject");
+      const mailBody = document.getElementById("mailBody");
+      const sendMailBtn = document.getElementById("sendMail");
+      const clearMailBtn = document.getElementById("clearMail");
+      const historyList = document.getElementById("mailHistoryList");
+      const MAIL_STORAGE = "slimeMailHistory";
+
+      function getMailHistory() {
+        return JSON.parse(localStorage.getItem(MAIL_STORAGE) || "[]");
+      }
+      function saveMailHistory(to, subject, body) {
+        const history = getMailHistory();
+        history.unshift({
+          time: new Date().toLocaleString("ja-JP"),
+          to: to,
+          subject: subject,
+          body: body,
+        });
+        if (history.length > 20) history.pop();
+        localStorage.setItem(MAIL_STORAGE, JSON.stringify(history));
+        renderMailHistory();
+      }
+
+      function renderMailHistory() {
+        const history = getMailHistory();
+        historyList.innerHTML =
+          history.length === 0
+            ? '<p class="text-gray text-sm text-center py-4">まだ送信履歴はありません</p>'
+            : history
+                .map(
+                  (item) => `
+                    <div class="history-item">
+                        <div class="history-subject">${item.subject || "（件名なし）"}</div>
+                        <div class="text-sm">宛先：${item.to}</div>
+                        <div class="text-xs text-gray mt-1">${item.time}</div>
+                    </div>
+                `,
+                )
+                .join("");
+      }
+
+      sendMailBtn.addEventListener("click", () => {
+        const to = mailTo.value.trim();
+        const subject = mailSubject.value.trim();
+        const body = mailBody.value.trim();
+
+        if (!to) {
+          alert("宛先メールアドレスを入力してください");
+          mailTo.focus();
+          return;
+        }
+
+        // 実際のメール送信：標準メーラーを起動
+        const mailtoLink = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.open(mailtoLink, "_blank");
+
+        // 履歴に保存
+        saveMailHistory(to, subject, body);
+        alert("メーラーを起動しました。送信履歴に保存しました。");
+      });
+
+      clearMailBtn.addEventListener("click", () => {
+        if (confirm("入力内容をクリアしますか？")) {
+          mailTo.value = "";
+          mailSubject.value = "";
+          mailBody.value = "";
+          mailTo.focus();
+        }
+      });
+
+      // 初期化
+      updateTime();
+      renderCalendar();
+      renderMailHistory();
+      setInterval(updateTime, 1000);
+    </script>
+  </body>
+</html>

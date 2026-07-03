@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Slime OS - ドキュメント</title>
+    <style>
+      /* ========== 共通リセット・基本設定 ========== */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+        background: url("mori1.jpg") no-repeat center center fixed;
+        background-size: cover;
+        color: #111;
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+      }
+      /* ========== サイドバー ========== */
+      .sidebar {                              
+        position: absolute;
+        top: 0;                                                                                                                              
+        left: 0;
+        height: 100vh;
+        width: 180px;
+        background-color: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(8px);
+        border-right: 1px solid rgba(180, 180, 180, 0.1);
+        padding: 15px 0;
+        font-size: 14px;
+        z-index: 50;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
+      }
+      .sidebar-item {
+        padding: 10px 16px;
+        cursor: pointer;
+        color: #222;
+        border-radius: 6px;
+        margin: 4px 8px;
+        transition: all 0.2s ease;
+      }                                                                                                                                                                         
+      .sidebar-item:hover {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+        background-color: rgba(0, 120, 215, 0.15);
+        transform: translateX(2px);
+      }
+      .sidebar-item.active {
+        background-color: rgba(0, 120, 215, 0.3);
+        color: #000;
+        font-weight: 600;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .sidebar ul {
+        list-style: none;
+      }
+
+      /* ========== メインコンテンツ ========== */
+      .main-content {
+        position: absolute;
+        top: 0;
+        left: 180px;
+        right: 0;
+        bottom: 0;
+        padding: 20px;                                                                        
+        overflow-y: auto;
+        z-index: 40;
+      }
+      .main-content::-webkit-scrollbar {
+        width: 8px;
+      }
+      .main-content::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.2);
+        border-radius: 4px;
+      }
+
+      .section-title {
+        font-size: 18px;
+        border-bottom: 1px solid rgba(150, 150, 150, 0.3);
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+        color: #333;
+        font-weight: 600;
+        text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+      }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 15px 10px;
+        cursor: pointer;
+        border-radius: 8px;
+        color: #111;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,0.3);
+      }
+      .item:hover {
+        background-color: rgba(255, 255, 255, 0.45);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .icon {
+        width: 48px;
+        height: 48px;
+        background-color: transparent;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        margin-bottom: 4px;
+      }
+
+      /* ========== ファイル・フォルダリスト ========== */
+      .file-list {
+        background-color: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(6px);
+        border-radius: 10px;
+        padding: 20px;
+        border: 1px solid rgba(255,255,255,0.3);
+      }
+      .file-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin: 8px 0;
+        background-color: rgba(255, 255, 255, 0.15);
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border: 1px solid transparent;
+      }
+      .file-item:hover {
+        background-color: rgba(255, 255, 255, 0.35);
+        border-color: rgba(0,120,215,0.2);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      }
+      .file-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .file-meta {
+        font-size: 12px;
+        color: #555;
+        margin-top: 2px;
+      }
+      .file-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .file-action-btn {
+        background: rgba(255,255,255,0.3);
+        border: none;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.2s;
+      }
+      .file-action-btn:hover {
+        background: rgba(255,255,255,0.6);
+      }
+
+      /* ========== ウィンドウ共通 ========== */
+      .window {
+        display: none;
+        position: absolute;
+        top: 8%;
+        left: 20%;
+        width: 60%;
+        height: 84%;
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        color: #333;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255,255,255,0.2);
+        border: 1px solid rgba(200, 200, 200, 0.4);
+        z-index: 200;
+        flex-direction: column;
+        overflow: hidden;
+        resize: both;
+        min-width: 400px;
+        min-height: 300px;
+      }
+
+      .window-header {
+        background-color: rgba(33, 150, 243, 0.9);
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(200, 200, 200, 0.4);
+        font-weight: bold;
+        user-select: none;
+        font-size: 14px;
+        color: #fff;
+        cursor: move;
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background 0.2s;
+      }
+      .close-btn:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .window-content {
+        padding: 16px;
+        flex-grow: 1;
+        overflow-y: auto;
+      }
+      .window-content::-webkit-scrollbar {
+        width: 6px;
+      }
+      .window-content::-webkit-scrollbar-thumb {
+        background-color: rgba(0,0,0,0.15);
+        border-radius: 3px;
+      }
+
+      /* ========== テキストエディタ ========== */
+      .editor-toolbar {
+        background-color: #f5f5f5;
+        padding: 8px 12px;
+        border-bottom: 1px solid #ddd;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .editor-toolbar button {
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        background: white;
+        font-size: 13px;
+        transition: all 0.2s;
+      }
+      .editor-toolbar button:hover {
+        background: #eef6ff;
+        border-color: #90caf9;
+      }
+      #textEditor {
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+        resize: none;
+        font-size: 14px;
+        line-height: 1.6;
+        padding: 15px;
+        background-color: #fff;
+      }
+
+      /* ========== スライムアニメーション ========== */
+      .slime {
+        position: absolute;
+        animation: float 6s ease-in-out infinite;
+        cursor: pointer;
+        pointer-events: auto;
+        z-index: 10;
+        transition: transform 0.3s ease;
+      }
+      .slime:hover {
+        transform: scale(1.1) !important;
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+      }
+
+      /* ドラッグ用スタイル */
+      .dragging {
+        opacity: 0.8;
+        cursor: move;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ========== サイドバー ========== -->
+    <div class="sidebar">
+      <ul>
+        <li class="sidebar-item" onclick="location.href='Home.html'">🏠 Home</li>
+        <li class="sidebar-item" onclick="location.href='desktop.html'">🖥️ Desktop</li>
+        <li class="sidebar-item active" onclick="location.href='document.html'">📝 Document</li>
+        <li class="sidebar-item" onclick="location.href='download.html'">📥 Download</li>
+        <li class="sidebar-item" onclick="location.href='video.html'">🎬 Video</li>
+      </ul>
+    </div>
+
+    <!-- ========== メインエリア ========== -->
+    <div class="main-content">
+      <div class="section-title">ドキュメントフォルダ</div>
+
+      <!-- クイックアクセスアイコン -->
+      <div class="grid">
+        <div class="item" onclick="openDocument('メモ帳.txt')">
+          <div class="icon">📝</div>
+          <span>メモ帳.txt</span>
+        </div>
+        <div class="item" onclick="openDocument('仕事の予定.docx')">
+          <div class="icon">📄</div>
+          <span>仕事の予定.docx</span>
+        </div>
+        <div class="item" onclick="openDocument('買い物リスト.txt')">
+          <div class="icon">📝</div>
+          <span>買い物リスト.txt</span>
+        </div>
+        <div class="item" onclick="openDocument('プレゼン資料.docx')">
+          <div class="icon">📄</div>
+          <span>プレゼン資料.docx</span>
+        </div>
+        <div class="item" onclick="openDocument('日記.txt')">
+          <div class="icon">📝</div>
+          <span>日記.txt</span>
+        </div>
+        <div class="item" onclick="createNewDocument()">
+          <div class="icon">➕</div>
+          <span>新規作成</span>
+        </div>
+      </div>
+
+      <!-- 詳細リスト表示 -->
+      <div class="file-list">
+        <div class="file-item" onclick="openDocument('メモ帳.txt')">
+          <div class="file-info">
+            <span class="icon" style="font-size:24px;">📝</span>
+            <div>
+              <div>メモ帳.txt</div>
+              <div class="file-meta">テキストファイル • 2 KB • 2026/06/15 22:00</div>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="file-action-btn" onclick="renameFile('メモ帳.txt', event)">✏️ 名前変更</button>
+            <button class="file-action-btn" onclick="deleteFile('メモ帳.txt', event)">🗑️ 削除</button>
+          </div>
+        </div>
+        <div class="file-item" onclick="openDocument('仕事の予定.docx')">
+          <div class="file-info">
+            <span class="icon" style="font-size:24px;">📄</span>
+            <div>
+              <div>仕事の予定.docx</div>
+              <div class="file-meta">Word文書 • 15 KB • 2026/06/15 20:30</div>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="file-action-btn" onclick="renameFile('仕事の予定.docx', event)">✏️ 名前変更</button>
+            <button class="file-action-btn" onclick="deleteFile('仕事の予定.docx', event)">🗑️ 削除</button>
+          </div>
+        </div>
+        <div class="file-item" onclick="openDocument('買い物リスト.txt')">
+          <div class="file-info">
+            <span class="icon" style="font-size:24px;">📝</span>
+            <div>
+              <div>買い物リスト.txt</div>
+              <div class="file-meta">テキストファイル • 1 KB • 2026/06/14 18:15</div>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="file-action-btn" onclick="renameFile('買い物リスト.txt', event)">✏️ 名前変更</button>
+            <button class="file-action-btn" onclick="deleteFile('買い物リスト.txt', event)">🗑️ 削除</button>
+          </div>
+        </div>
+        <div class="file-item" onclick="openDocument('プレゼン資料.docx')">
+          <div class="file-info">
+            <span class="icon" style="font-size:24px;">📄</span>
+            <div>
+              <div>プレゼン資料.docx</div>
+              <div class="file-meta">Word文書 • 42 KB • 2026/06/14 15:00</div>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="file-action-btn" onclick="renameFile('プレゼン資料.docx', event)">✏️ 名前変更</button>
+            <button class="file-action-btn" onclick="deleteFile('プレゼン資料.docx', event)">🗑️ 削除</button>
+          </div>
+        </div>
+        <div class="file-item" onclick="openDocument('日記.txt')">
+          <div class="file-info">
+            <span class="icon" style="font-size:24px;">📝</span>
+            <div>
+              <div>日記.txt</div>
+              <div class="file-meta">テキストファイル • 3 KB • 2026/06/15 09:20</div>
+            </div>
+          </div>
+          <div class="file-actions">
+            <button class="file-action-btn" onclick="renameFile('日記.txt', event)">✏️ 名前変更</button>
+            <button class="file-action-btn" onclick="deleteFile('日記.txt', event)">🗑️ 削除</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== スライム装飾 ========== -->
+    <div class="slime" style="top: 20%; left: 15%; animation-delay: 0s">
+      <img src="image.png" style="width: 45px" alt="slime" />
+    </div>
+    <div class="slime" style="top: 50%; left: 70%; animation-delay: 2s">
+      <img src="image.png" style="width: 35px" alt="slime" />
+    </div>
+    <div class="slime" style="top: 70%; left: 40%; animation-delay: 4s">
+      <img src="image.png" style="width: 50px" alt="slime" />
+    </div>
+    <div class="slime" style="top: 30%; left: 25%; animation-delay: 1s">
+      <img src="image.png" style="width: 40px" alt="slime" />
+    </div>
+    <div class="slime" style="top: 65%; left: 75%; animation-delay: 3s">
+      <img src="image.png" style="width: 38px" alt="slime" />
+    </div>
+
+    <!-- ========== テキストエディタウィンドウ ========== -->
+    <div id="editorWindow" class="window">
+      <div class="window-header" id="editorHeader">
+        <span id="editorTitle">無題の文書</span>
+        <button class="close-btn" onclick="closeEditor()">❌</button>
+      </div>
+      <div class="editor-toolbar">
+        <button onclick="saveDocument()">💾 保存</button>
+        <button onclick="clearDocument()">🗑️ クリア</button>
+        <button onclick="insertTimestamp()">🕒 時刻挿入</button>
+        <span style="font-size:12px; color:#666; margin-left:auto;">テキストエディタ</span>
+      </div>
+      <textarea id="textEditor" placeholder="ここに文字を入力してください..."></textarea>
+    </div>
+    <div id="startMenu" class="menu-glass absolute bottom-16 left-4 w-72 p-6 rounded-2xl text-white shadow-2xl transition-all duration-500 opacity-0 scale-95 origin-bottom-left z-50">
+      <h2 class="text-xl font-bold mb-4 text-blue-300">✨ Slime OS Menu ✨</h2>
+      <div class="space-y-3">
+          <a href="Home.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">🌿 スライムの森</a>
+          <a href="mizube.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">💧 水辺の広場</a>
+          <a href="settei.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">⚙️ 設定</a>
+          <a href="karennda2-.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">📅 カレンダー</a>
+          <a href="office.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">📚 officeー</a>
+      </div>
+  </div>
+  
+  <div class="absolute bottom-0 left-0 w-full h-14 bg-black/40 backdrop-blur-md flex items-center px-4 z-50">
+      <button onclick="toggleMenu()" class="text-white hover:bg-white/20 p-3 rounded-xl transition font-bold">Slime OS</button>
+  </div>
+  
+  <script>
+      function toggleMenu() {
+          const menu = document.getElementById('startMenu');
+          if (menu) {
+              menu.classList.toggle('opacity-0');
+              menu.classList.toggle('scale-95');
+          }
+      }
+  </script>
+    <script>
+      const editorWindow = document.getElementById("editorWindow");
+      const editorTitle = document.getElementById("editorTitle");
+      const textEditor = document.getElementById("textEditor");
+      const editorHeader = document.getElementById("editorHeader");
+      let currentFileName = "";
+
+      // ウィンドウドラッグ機能
+      let isDragging = false;
+      let offsetX, offsetY;
+
+      editorHeader.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        offsetX = e.clientX - editorWindow.getBoundingClientRect().left;
+        offsetY = e.clientY - editorWindow.getBoundingClientRect().top;
+        editorWindow.classList.add('dragging');
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        editorWindow.style.left = (e.clientX - offsetX) + 'px';
+        editorWindow.style.top = (e.clientY - offsetY) + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+        editorWindow.classList.remove('dragging');
+      });
+
+      // 既存ファイルを開く
+      function openDocument(fileName) {
+        currentFileName = fileName;
+        editorTitle.innerText = fileName;
+        // 仮の内容を表示（実際はファイルの内容を読み込みます）
+        if (fileName === "メモ帳.txt") textEditor.value = "これはメモ帳の内容です。\n自由に編集できます。";
+        else if (fileName === "仕事の予定.docx") textEditor.value = "【6月の予定】\n・16日：会議\n・18日：資料提出\n・20日：出張";
+        else if (fileName === "買い物リスト.txt") textEditor.value = "買い物リスト\n・牛乳\n・卵\n・食パン\n・果物";
+        else if (fileName === "プレゼン資料.docx") textEditor.value = "プレゼンのポイント\n1. 現状の課題\n2. 改善案\n3. 今後の計画";
+        else if (fileName === "日記.txt") textEditor.value = "2026年6月15日\n今日は晴れて気持ちの良い一日でした。Slime OSの開発が進んでいます。";
+        else textEditor.value = "";
+        
+        editorWindow.style.display = "flex";
+        textEditor.focus();
+      }
+
+      // 新規作成
+      function createNewDocument() {
+        currentFileName = "無題の文書.txt";
+        editorTitle.innerText = currentFileName;
+        textEditor.value = "";
+        editorWindow.style.display = "flex";
+        textEditor.focus();
+      }
+
+      // 保存
+      function saveDocument() {
+        const link = document.createElement('a');
+        const blob = new Blob([textEditor.value], {type: 'text/plain;charset=utf-8'});
+        link.href = URL.createObjectURL(blob);
+        link.download = currentFileName;
+        link.click();
+        URL.revokeObjectURL(link.href);
+        alert(`「${currentFileName}」として保存しました。`);
+      }
+
+      // クリア
+      function clearDocument() {
+        if (confirm('内容をすべて消去してもよろしいですか？')) {
+          textEditor.value = "";
+          textEditor.focus();
+        }
+      }
+
+      // 閉じる
+      function closeEditor() {
+        editorWindow.style.display = "none";
+        currentFileName = "";
+      }
+
+      // 時刻挿入
+      function insertTimestamp() {
+        const now = new Date();
+        const timestamp = now.getFullYear() + "/" + 
+          String(now.getMonth()+1).padStart(2,'0') + "/" + 
+          String(now.getDate()).padStart(2,'0') + " " + 
+          String(now.getHours()).padStart(2,'0') + ":" + 
+          String(now.getMinutes()).padStart(2,'0');
+        textEditor.value += (textEditor.value ? "\n" : "") + "[" + timestamp + "]";
+        textEditor.focus();
+      }
+
+      // 名前変更（仮実装）
+      function renameFile(fileName, e) {
+        e.stopPropagation();
+        const newName = prompt("新しい名前を入力してください：", fileName);
+        if (newName && newName !== fileName) {
+          alert(`「${fileName}」を「${newName}」に変更しました（仮）`);
+        }
+      }
+
+      // 削除（仮実装）
+      function deleteFile(fileName, e) {
+        e.stopPropagation();
+        if (confirm(`「${fileName}」を削除してもよろしいですか？`)) {
+          alert(`「${fileName}」を削除しました（仮）`);
+        }
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        .menu-glass { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(15px); }
+    </style>
+  </body>
+</html>

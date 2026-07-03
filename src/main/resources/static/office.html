@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Office - MyOffice</title>
+    <!-- デザインを動かすためのTailwind CSSを読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 2rem;
+        background: url("suraimu mori.png") no-repeat center center fixed;
+        background-size: cover;
+        font-family: system-ui, sans-serif;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .office-container {
+        max-width: 600px;
+        margin: 50px auto;
+        background: rgba(255, 255, 255, 0.101);
+        padding: 2rem;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 40; /* メニューの下に隠れるように調整 */
+      }
+      h1 {
+        color: #2d3748;
+        text-align: center;
+      }
+      .button-group {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        margin-top: 3rem;
+        flex-wrap: wrap;
+      }
+      .office-btn {
+        padding: 1.2rem 2.5rem;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .office-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+      }
+      .word {
+        background: #2b579a;
+      }
+      .excel {
+        background: #217346;
+      }
+      .powerpoint {
+        background: #d24726;
+      }
+	  /* 新ボタン用 */
+	  .memo {
+	    background: #9C27B0; /* 紫系 */
+	  }
+	  .clock {
+	    background: #009688; /* 緑青系 */
+	  }
+	  .calendar {
+	    background: #FF9800; /* オレンジ系 */
+	  }
+      /* スライムのふわふわアニメーション */
+      .slime {
+        position: absolute;
+        animation: float 6s ease-in-out infinite;
+        z-index: 10;
+        pointer-events: none;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      /* スタートメニューの半透明すりガラス効果 */
+      .menu-glass {
+        background: rgba(30, 41, 59, 0.85);
+        backdrop-filter: blur(15px);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 浮遊するスライムたち -->
+    <div class="slime" style="top: 10%; left: 10%; animation-delay: 0s">
+      <img src="image.png" width="50" />
+    </div>
+    <div class="slime" style="top: 70%; left: 20%; animation-delay: 2s">
+      <img src="image.png" width="40" />
+    </div>
+    <div class="slime" style="top: 20%; left: 80%; animation-delay: 4s">
+      <img src="image.png" width="60" />
+    </div>
+    <div class="slime" style="top: 60%; left: 85%; animation-delay: 1s">
+      <img src="image.png" width="45" />
+    </div>
+
+    <!-- メインのオフィス画面 -->
+    <div class="office-container">
+      <h1>MyOffice</h1>
+      <div class="button-group">
+        <button
+          class="office-btn word"
+          onclick="
+            window.open('https://docs.google.com/document/create', '_blank')
+          "
+        >
+          Word
+        </button>
+        <button
+          class="office-btn excel"
+          onclick="window.open('https://sheets.google.com/create', '_blank')"
+        >
+          Excel
+        </button>
+        <button
+          class="office-btn powerpoint"
+          onclick="window.open('https://slides.google.com/create', '_blank')"
+        >
+          PowerPoint
+        </button>
+		<button 
+		  class="office-btn memo"
+		  onclick="window.open('memo.html', '_blank')"
+		>
+		  📝 メモ帳
+		</button>
+
+		<button 
+		  class="office-btn clock"
+		  onclick="window.open('clock.html', '_blank')"
+		>
+		  🕒 時計
+		</button>
+
+		<button 
+		  class="office-btn calendar"
+		  onclick="window.open('karennda2-.html', '_blank')"
+		>
+		  📅 カレンダー
+		</button>
+      </div>
+    </div>
+
+    <!-- ========== Slime OS スタートメニュー ========== -->
+    <div
+      id="startMenu"
+      class="menu-glass absolute bottom-16 left-4 w-72 p-6 rounded-2xl text-white shadow-2xl transition-all duration-500 opacity-0 scale-95 origin-bottom-left z-50"
+    >
+      <h2 class="text-xl font-bold mb-4 text-blue-300">✨ Slime OS Menu ✨</h2>
+      <div class="space-y-3">
+        <a
+          href="Home.html"
+          class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+          >🌿 スライムの森</a
+        >
+        <a
+          href="mizube.html"
+          class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+          >💧 水辺の広場</a
+        >
+        <a
+          href="settei.html"
+          class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+          >⚙️ 設定</a
+        >
+        <a
+          href="karennda2-.html"
+          class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+          >📅 カレンダー</a
+        >
+        <a
+          href="office.html"
+          class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition"
+          >📚 officeー</a
+        >
+      </div>
+    </div>
+
+    <!-- ========== 下部のタスクバー ========== -->
+    <div
+      class="absolute bottom-0 left-0 w-full h-14 bg-black/40 backdrop-blur-md flex items-center px-4 z-50"
+    >
+      <button
+        onclick="toggleMenu()"
+        class="text-white hover:bg-white/20 p-3 rounded-xl transition font-bold"
+      >
+        Slime OS
+      </button>
+    </div>
+
+    <!-- メニューを開き閉めする仕組み -->
+    <script>
+      function toggleMenu() {
+        const menu = document.getElementById("startMenu");
+        if (menu) {
+          menu.classList.toggle("opacity-0");
+          menu.classList.toggle("scale-95");
+        }
+      }
+    </script>
+  </body>
+</html>

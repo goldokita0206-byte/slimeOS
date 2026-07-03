@@ -1,0 +1,183 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+body {
+    height: 100vh;
+    font-family: "Arial", sans-serif;
+}
+
+.boot-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+
+/* ===== 背景画像：image4.png を使用 ===== */
+.forest-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url("image4.png") center/cover no-repeat;
+    z-index: 1;
+}
+
+/* 元の画面の雰囲気に合わせた青みオーバーレイ */
+.color-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 30, 60, 0.32);
+    z-index: 2;
+}
+
+/* ===== 光るタイトル ===== */
+.glow-title {
+    position: relative;
+    z-index: 10;
+    font-size: 4.8rem;
+    color: #80f0ff;
+    text-shadow: 
+        0 0 8px #80f0ff,
+        0 0 16px #80f0ff,
+        0 0 24px #00ccff,
+        0 0 32px #00ccff;
+    animation: titlePulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes titlePulse {
+    0% { filter: brightness(1); }
+    100% { filter: brightness(1.4); }
+}
+
+/* ===== メインスライム：image.png を使用 ===== */
+.main-slime {
+    position: relative;
+    z-index: 10;
+    animation: slimeFloat 3s ease-in-out infinite alternate;
+}
+
+.slime-img {
+    width: 240px;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(80, 200, 255, 0.65));
+}
+
+/* 周りの泡のアニメーション */
+.bubble {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(180, 230, 255, 0.7);
+    border-radius: 50%;
+    border: 1px solid #ffffffcc;
+    animation: bubbleRise 2.5s infinite ease-out;
+}
+.b1 { top: -10px; left: -20px; animation-delay: 0.2s; }
+.b2 { top: -25px; right: -15px; animation-delay: 0.6s; }
+.b3 { bottom: 10px; left: -30px; animation-delay: 1.0s; }
+.b4 { bottom: -10px; right: -25px; animation-delay: 1.4s; }
+
+@keyframes slimeFloat {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-10px) scale(0.98, 1.02); }
+}
+
+@keyframes bubbleRise {
+    0% { transform: translateY(0) scale(1); opacity: 0.8; }
+    100% { transform: translateY(-40px) scale(0.5); opacity: 0; }
+}
+
+/* ===== 小さなスライムたち ===== */
+.small-slimes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 9;
+}
+
+.small-slime {
+    position: absolute;
+    animation: slimeFloat 3.5s infinite alternate;
+}
+.small-slime img {
+    width: 60px;
+    height: auto;
+    filter: drop-shadow(0 0 10px rgba(80, 200, 255, 0.55));
+}
+.small-slime:nth-child(1) { top: 22%; left: 16%; animation-delay: 0.3s; }
+.small-slime:nth-child(2) { top: 42%; right: 20%; animation-delay: 0.7s; }
+.small-slime:nth-child(3) { bottom: 32%; left: 24%; animation-delay: 1.1s; }
+.small-slime:nth-child(4) { bottom: 42%; right: 18%; animation-delay: 1.5s; }
+
+/* ===== 進捗バー（ダウンロード風） ===== */
+.progress-wrap {
+    position: relative;
+    z-index: 10;
+    width: 420px;
+    text-align: center;
+}
+.progress-bar {
+    width: 100%;
+    height: 18px;
+    background: rgba(20, 40, 80, 0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+}
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #0099ff, #00e0ff);
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 200, 255, 0.6);
+    position: relative;
+    transition: width 0.1s linear;
+}
+/* 流れる光のエフェクト */
+.progress-fill::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shine 1.5s infinite;
+}
+@keyframes shine {
+    100% { left: 100%; }
+}
+
+.status-text {
+    margin-top: 12px;
+    color: #c8eeff;
+    font-size: 1.1rem;
+    text-shadow: 0 0 6px rgba(0,200,255,0.4);
+}
+
+/* ===== 右上：情報パネル ===== */
+.info-panel {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    z-index: 10;
+    color: #e0f7ff;
+    text-align: right;
+    text-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+.time { font-size: 1.8rem; font-weight: bold; }
+.date { font-size: 1rem; margin: 4px 0; }
+.weather { font-size: 1rem; }

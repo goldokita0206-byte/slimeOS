@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Slime OS - 統合版</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    // Tailwind カスタム設定
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            slime: {
+              primary: '#0ea5e9',
+              secondary: '#10b981',
+              dark: '#0f172a',
+              light: '#bae6fd',
+              glass: 'rgba(255, 255, 255, 0.1)',
+            },
+          },
+          backdropBlur: {
+            'xs': '2px',
+            'sm': '4px',
+            'md': '8px',
+            'lg': '12px',
+          },
+        }
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto { content-visibility: auto; }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .scrollbar-hide::-webkit-scrollbar { display: none; }
+      .drag-handle { cursor: move; }
+      .resize-handle { cursor: se-resize; }
+    }
+  </style>
+
+  <style>
+    /* ========== 共通リセット・基本設定 ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: url("10.jpeg") no-repeat center center fixed;
+      background-size: cover;
+      color: #1a1a1a;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ========== エクスプローラー風サイドバー ========== */
+    .sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 180px;
+      background-color: rgba(15, 23, 42, 0.2);
+      backdrop-filter: blur(8px);
+      border-right: 1px solid rgba(186, 230, 253, 0.2);
+      padding: 15px 0;
+      font-size: 14px;
+      z-index: 50;
+    }
+    .sidebar nav ul {
+      list-style: none;
+    }
+    .sidebar nav ul li a {
+      display: block;
+      color: #f8fafc;
+      text-decoration: none;
+      font-size: 15px;
+      padding: 12px 16px;
+      margin: 4px 8px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      line-height: 1.5;
+    }
+    .sidebar nav ul li a:hover {
+      background-color: rgba(14, 165, 233, 0.3);
+      padding-left: 20px;
+    }
+    .sidebar nav ul li a.active {
+      background-color: rgba(14, 165, 233, 0.4);
+      font-weight: 600;
+    }
+
+    .main-content {
+  position: absolute;
+  top: 0;
+  left: 180px;
+  right: 0;
+  bottom: 0;
+  padding: 20px;
+  background-color: transparent;
+  backdrop-filter: none;
+  overflow-y: auto;
+  z-index: 40; /* ← このままでOK：40 < 60 なのでスライムが前面に出る */
+}
+
+    .section-title {
+      font-size: 16px;
+      border-bottom: 1px solid rgba(14, 165, 233, 0.3);
+      padding-bottom: 8px;
+      margin-bottom: 20px;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+
+    .item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 15px 10px;
+      cursor: pointer;
+      border-radius: 10px;
+      color: #111;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .item:hover {
+      background-color: rgba(14, 165, 233, 0.2);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon {
+      width: 48px;
+      height: 48px;
+      background-color: transparent;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin-bottom: 4px;
+    }
+
+    /* ========== ウィンドウ共通 ========== */
+    .window, .office-window, .paint-window {
+      display: none;
+      position: absolute;
+      top: 10%;
+      left: 22%;
+      width: 55%;
+      height: 72%;
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      color: #333;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      z-index: 200;
+      flex-direction: column;
+      overflow: hidden;
+      resize: both;
+      min-width: 400px;
+      min-height: 300px;
+    }
+
+    .window-header {
+      background: linear-gradient(135deg, #0ea5e9, #10b981);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      font-weight: bold;
+      user-select: none;
+      font-size: 14px;
+      color: white;
+      drag-handle: move;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.8);
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .close-btn:hover {
+      color: #ef4444;
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .window-content {
+      padding: 16px;
+      flex-grow: 1;
+      background-color: rgba(250, 250, 250, 0.6);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #0ea5e9 #e2e8f0;
+    }
+    .window-content::-webkit-scrollbar { width: 8px; }
+    .window-content::-webkit-scrollbar-track { background: #e2e8f0; }
+    .window-content::-webkit-scrollbar-thumb { background: #0ea5e9; border-radius: 4px; }
+
+    .file-item {
+      margin: 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #222;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+    .file-item:hover {
+      background-color: rgba(14, 165, 233, 0.2);
+      padding-left: 16px;
+    }
+
+    /* ========== オフィスウィンドウ ========== */
+    .office-window {
+      top: 5%;
+      left: 10%;
+      width: 80%;
+      height: 85%;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    .office-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background-color: #f8fafc;
+    }
+
+    /* ========== 🖼️ ペイント・ピクチャーウィンドウ ========== */
+    .paint-window {
+      top: 5%;
+      left: 10%;
+      width: 80%;
+      height: 85%;
+      background-color: #ffffff;
+    }
+    .paint-toolbar {
+      background-color: #f1f5f9;
+      padding: 10px 16px;
+      border-bottom: 1px solid #cbd5e1;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .paint-toolbar button, .paint-toolbar input, .paint-toolbar select {
+      padding: 8px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      background: white;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .paint-toolbar button:hover {
+      background: #e0f2fe;
+      border-color: #0ea5e9;
+    }
+    #paintCanvas {
+      flex-grow: 1;
+      background-color: #fff;
+      cursor: crosshair;
+    }
+    .hidden-input {
+      display: none;
+    }
+
+    /* ========== 右クリックメニュー ========== */
+    .custom-menu {
+      display: none;
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      color: #333;
+      border: 1px solid #cbd5e1;
+      box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.15);
+      padding: 5px 0;
+      min-width: 180px;
+      z-index: 1000;
+      font-size: 13px;
+      border-radius: 8px;
+    }
+    .menu-item {
+      padding: 9px 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .menu-item:hover {
+      background-color: #bae6fd;
+    }
+    .menu-separator {
+      border-bottom: 1px solid #e2e8f0;
+      margin: 6px 0;
+    }
+
+    /* ========== スライムアニメーション ========== */
+    .slime {
+  position: absolute;
+  animation: float 6s ease-in-out infinite;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 60; /* ← 元の10から 60 に変更（メインエリアより上になる） */
+}
+    .slime:hover { transform: scale(1.1); }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* ========== スタートメニュー ========== */
+    .menu-glass { 
+      background: rgba(30, 41, 59, 0.85); 
+      backdrop-filter: blur(15px); 
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <!-- ========== エクスプローラー UI ========== -->
+  <div class="sidebar">
+    <nav>
+      <ul>
+        <li><a href="Home.html" class="active"><i class="fa-solid fa-house mr-2"></i> Home</a></li>
+        <li><a href="desktop.html"><i class="fa-solid fa-desktop mr-2"></i> Desktop</a></li>
+        <li><a href="document.html"><i class="fa-solid fa-file-lines mr-2"></i> Document</a></li>
+        <li><a href="download.html"><i class="fa-solid fa-download mr-2"></i> Download</a></li>
+        <li><a href="video.html"><i class="fa-solid fa-video mr-2"></i> Video</a></li>
+        <li><a href="picture.html"><i class="fa-solid fa-image mr-2"></i> Picture</a></li>
+        <li><a href="office.html"><i class="fa-solid fa-briefcase mr-2"></i> Office</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="section-title"> 🖼️ Picture</div>
+    <div class="grid">
+      <!-- ✅ ピクチャーアイコン -->
+      <div class="item" onclick="openPaint()">
+        <div class="icon">🖼️</div>
+        <span>画像 1</span>
+      </div>
+      <div class="item" onclick="openPaint()">
+        <div class="icon">🖼️</div>
+        <span>画像 2</span>
+      </div>
+      <div class="item" onclick="openPaint()">
+        <div class="icon">🖼️</div>
+        <span>画像 3</span>
+      </div>
+      <div class="item" onclick="openPaint()">
+        <div class="icon">🖼️</div>
+        <span>画像 4</span>
+      </div>
+      <div class="item" onclick="openPaint()">
+        <div class="icon">🖼️</div>
+        <span>画像 5</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== スライム装飾 ========== -->
+  <div class="slime" style="top: 20%; left: 15%; animation-delay: 0s">
+    <img src="image.png" style="width: 45px" alt="slime">
+  </div>
+  <div class="slime" style="top: 50%; left: 70%; animation-delay: 2s">
+    <img src="image.png" style="width: 35px" alt="slime">
+  </div>
+  <div class="slime" style="top: 70%; left: 40%; animation-delay: 4s">
+    <img src="image.png" style="width: 50px" alt="slime">
+  </div>
+  <div class="slime" style="top: 30%; left: 25%; animation-delay: 0s">
+    <img src="image.png" style="width: 45px" alt="slime">
+  </div>
+  <div class="slime" style="top: 60%; left: 80%; animation-delay: 2s">
+    <img src="image.png" style="width: 35px" alt="slime">
+  </div>
+  <div class="slime" style="top: 80%; left: 50%; animation-delay: 4s">
+    <img src="image.png" style="width: 50px" alt="slime">
+  </div>
+
+  <!-- ========== ウィンドウ ========== -->
+  <div id="fileManager" class="window">
+    <div class="window-header drag-handle">
+      <span id="windowTitle">📁 ファイルマネージャー</span>
+      <button class="close-btn" onclick="closeWindow()">❌</button>
+    </div>
+    <div id="windowContent" class="window-content"></div>
+  </div>
+
+  <div id="officeAppWindow" class="office-window">
+    <div class="window-header drag-handle" style="background: linear-gradient(135deg, #334155, #0f172a);">
+      <span id="officeWindowTitle">📝 オフィスエディタ</span>
+      <button class="close-btn" onclick="closeOfficeWindow()">❌</button>
+    </div>
+    <div style="flex-grow: 1; position: relative">
+      <iframe id="officeFrame" class="office-frame" src=""></iframe>
+    </div>
+  </div>
+
+  <!-- ========== 🖼️ ペイント・ピクチャー ウィンドウ ========== -->
+  <div id="paintAppWindow" class="paint-window">
+    <div class="window-header drag-handle" style="background: linear-gradient(135deg, #f97316, #ea580c);">
+      <span>🎨 簡易ペイント - 画像編集</span>
+      <button class="close-btn" onclick="closePaintWindow()">❌</button>
+    </div>
+    <div class="paint-toolbar">
+      <button id="penBtn"><i class="fa-solid fa-pen-nib mr-1"></i> ペン</button>
+      <button id="eraserBtn"><i class="fa-solid fa-eraser mr-1"></i> 消しゴム</button>
+      <label class="flex items-center gap-1">色: <input type="color" id="colorPicker" value="#000000" class="w-8 h-8 p-0 border-0"></label>
+      <label class="flex items-center gap-1">サイズ: 
+        <select id="lineWidth">
+          <option value="2">細</option>
+          <option value="5" selected>中</option>
+          <option value="10">太</option>
+          <option value="20">極太</option>
+        </select>
+      </label>
+      <input type="file" id="imageLoader" class="hidden-input" accept="image/*">
+      <button id="loadImageBtn"><i class="fa-solid fa-folder-open mr-1"></i> 画像を開く</button>
+      <button id="saveImageBtn"><i class="fa-solid fa-floppy-disk mr-1"></i> 保存</button>
+      <button id="clearCanvasBtn"><i class="fa-solid fa-trash mr-1"></i> クリア</button>
+    </div>
+    <canvas id="paintCanvas"></canvas>
+  </div>
+
+  <!-- ========== 右クリックメニュー ========== -->
+  <div id="customMenu" class="custom-menu">
+    <div class="menu-item" onclick="createNewFolder()">📁 フォルダーの作成(F)...</div>
+    <div class="menu-item" onclick="createNewFile()">📄 ドキュメントの作成(D)</div>
+    <div class="menu-separator"></div>
+    <div class="menu-item">📋 貼り付け(P)</div>
+    <div class="menu-item">✂️ 切り取り(T)</div>
+    <div class="menu-separator"></div>
+    <div class="menu-item">💻 ターミナルを開く</div>
+  </div>
+
+  <!-- ========== スタートメニュー ========== -->
+  <div id="startMenu" class="menu-glass absolute bottom-16 left-4 w-72 p-6 rounded-2xl text-white shadow-2xl transition-all duration-500 opacity-0 scale-95 origin-bottom-left z-50">
+    <h2 class="text-xl font-bold mb-4 text-sky-300">✨ Slime OS Menu ✨</h2>
+    <div class="space-y-3">
+      <a href="Home.html" class="block w-full text-left p-3 bg-sky-500/20 rounded-lg font-medium hover:bg-white/10 transition">🌿 スライムの森</a>
+      <a href="mizube.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">💧 水辺の広場</a>
+      <a href="settei.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">⚙️ 設定</a>
+      <a href="karennda2-.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">📅 カレンダー</a>
+      <a href="office.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">📚 Office</a>
+    </div>
+  </div>
+
+  <!-- ========== タスクバー ========== -->
+  <div class="absolute bottom-0 left-0 w-full h-14 bg-black/30 backdrop-blur-md flex items-center px-4 z-50 border-t border-sky-500/20">
+    <button onclick="toggleMenu()" class="text-white hover:bg-sky-500/20 p-3 rounded-xl transition font-bold">Slime OS</button>
+    <div class="ml-auto text-white/80 text-sm" id="currentTime"></div>
+  </div>
+
+  <script>
+    // スタートメニュー開閉
+    function toggleMenu() {
+      const menu = document.getElementById('startMenu');
+      menu.classList.toggle('opacity-0');
+      menu.classList.toggle('scale-95');
+    }
+
+    // 時計表示
+    function updateTime() {
+      const now = new Date();
+      const timeStr = now.getFullYear() + '/' + 
+                      String(now.getMonth()+1).padStart(2,'0') + '/' + 
+                      String(now.getDate()).padStart(2,'0') + ' ' + 
+                      String(now.getHours()).padStart(2,'0') + ':' + 
+                      String(now.getMinutes()).padStart(2,'0');
+      document.getElementById('currentTime').innerText = timeStr;
+    }
+    updateTime();
+    setInterval(updateTime, 60000);
+
+    // ==================================================
+    // ファイルマネージャー関連
+    // ==================================================
+    const fileManager = document.getElementById("fileManager");
+    const windowTitle = document.getElementById("windowTitle");
+    const windowContent = document.getElementById("windowContent");
+    const customMenu = document.getElementById("customMenu");
+    const officeAppWindow = document.getElementById("officeAppWindow");
+    const officeWindowTitle = document.getElementById("officeWindowTitle");
+    const officeFrame = document.getElementById("officeFrame");
+
+    let currentOpenFolder = "";
+    let activeWindow = null;
+    let initialX, initialY, offsetX, offsetY;
+
+    const folderDatabase = {
+      ドキュメント: [],
+      ピクチャ: [],
+      ビデオ: [],
+      オフィス: [],
+    };
+
+    function initDatabase() {
+      for (let i = 1; i <= 3; i++)
+        folderDatabase["ドキュメント"].push({ type: "folder", name: `新しいフォルダー (${i})` });
+      for (let i = 1; i <= 3; i++)
+        folderDatabase["ドキュメント"].push({ type: "file", name: `テキストドキュメント (${i}).txt`, icon: "📝" });
+      for (let i = 1; i <= 3; i++)
+        folderDatabase["ピクチャ"].push({ type: "file", name: `思い出の写真 (${i}).jpg`, icon: "🖼️" });
+      for (let i = 1; i <= 3; i++)
+        folderDatabase["ビデオ"].push({ type: "file", name: `旅の記録 (${i}).mp4`, icon: "🎬" });
+      
+      folderDatabase["オフィス"].push({ type: "office-doc", name: "Word 文書作成", icon: "📝", url: "word.html" });
+      folderDatabase["オフィス"].push({ type: "office-sheet", name: "Excel 表計算", icon: "📊", url: "excel.html" });
+      folderDatabase["オフィス"].push({ type: "office-slide", name: "PowerPoint プレゼン", icon: "📽️", url: "powerpoint.html" });
+    }
+
+    function renderContents(folderName) {
+      const items = folderDatabase[folderName];
+      if (items.length === 0) {
+        windowContent.innerHTML = '<p style="color: #94a3b8; text-align:center; padding-top:20px;">このフォルダは空です。</p>';
+        return;
+      }
+      windowContent.innerHTML = items.map(item => {
+        if (item.type === "folder") {
+          return `<div class="file-item"><span style="font-size: 18px;">📁</span><span>${item.name}</span></div>`;
+        } else if (item.type.startsWith("office-")) {
+          return `<div class="file-item" onclick="launchOffice('${item.name}', '${item.url}')">
+            <span style="font-size: 18px; width:22px; text-align:center;">${item.icon}</span>
+            <span style="color:#0ea5e9; font-weight:500;">${item.name}</span>
+          </div>`;
+        } else {
+          return `<div class="file-item"><span style="font-size: 18px; width:22px; text-align:center;">${item.icon}</span><span>${item.name}</span></div>`;
+        }
+      }).join("");
+    }
+
+    function launchOffice(fileName, url) {
+      officeWindowTitle.innerText = fileName + " - 起動";
+      officeFrame.src = url;
+      officeAppWindow.style.display = "flex";
+    }
+    function closeOfficeWindow() {
+      officeAppWindow.style.display = "none";
+      officeFrame.src = "";
+    }
+
+    function openWindow(folderName) {
+      currentOpenFolder = folderName;
+      windowTitle.innerText = folderName + " - ファイルマネージャー";
+      renderContents(folderName);
+      fileManager.style.display = "flex";
+    }
+    function closeWindow() {
+      fileManager.style.display = "none";
+      currentOpenFolder = "";
+    }
+
+    function createNewFolder() {
+      if (!currentOpenFolder) return;
+      const count = folderDatabase[currentOpenFolder].filter(i => i.type === "folder").length + 1;
+      folderDatabase[currentOpenFolder].push({ type: "folder", name: `新しいフォルダー (${count})` });
+      renderContents(currentOpenFolder);
+    }
+    function createNewFile() {
+      if (!currentOpenFolder) return;
+      const count = folderDatabase[currentOpenFolder].filter(i => i.type.includes("file")).length + 1;
+      const conf = {
+        "ドキュメント": { icon:"📝", ext:".txt", type:"file" },
+        "オフィス": { icon:"📝", ext:".docx", type:"office-doc", url:"word.html" },
+        "ピクチャ": { icon:"🖼️", ext:".jpg", type:"file" },
+        "ビデオ": { icon:"🎬", ext:".mp4", type:"file" }
+      }[currentOpenFolder];
+      folderDatabase[currentOpenFolder].push({
+        type: conf.type,
+        name: `新規作成ファイル (${count})${conf.ext}`,
+        icon: conf.icon,
+        url: conf.url || ""
+      });
+      renderContents(currentOpenFolder);
+    }
+
+    // ==================================================
+    // 🖼️ ペイント機能
+    // ==================================================
+    const paintAppWindow = document.getElementById("paintAppWindow");
+    const canvas = document.getElementById("paintCanvas");
+    const ctx = canvas.getContext("2d");
+    let isDrawing = false;
+    let currentTool = 'pen';
+    let currentColor = '#000000';
+    let currentLineWidth = 5;
+    let lastX = 0;
+    let lastY = 0;
+
+    function openPaint() {
+      paintAppWindow.style.display = "flex";
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    function closePaintWindow() {
+      paintAppWindow.style.display = "none";
+    }
+
+    // ツール設定
+    document.getElementById('penBtn').addEventListener('click', () => currentTool = 'pen');
+    document.getElementById('eraserBtn').addEventListener('click', () => currentTool = 'eraser');
+    document.getElementById('colorPicker').addEventListener('input', (e) => currentColor = e.target.value);
+    document.getElementById('lineWidth').addEventListener('change', (e) => currentLineWidth = parseInt(e.target.value));
+
+    // 描画処理
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDrawing) return;
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(e.offsetX, e.offsetY);
+      
+      ctx.strokeStyle = currentTool === 'eraser' ? '#FFFFFF' : currentColor;
+      ctx.lineWidth = currentTool === 'eraser' ? currentLineWidth * 2 : currentLineWidth;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+    canvas.addEventListener('mouseout', () => isDrawing = false);
+
+    // 画像読み込み・保存
+    document.getElementById('loadImageBtn').addEventListener('click', () => document.getElementById('imageLoader').click());
+    document.getElementById('imageLoader').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const img = new Image();
+      img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      img.src = URL.createObjectURL(file);
+    });
+    document.getElementById('saveImageBtn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/png');
+      link.download = `slime_os_paint_${new Date().toLocaleString('ja-JP')}.png`;
+      link.click();
+    });
+    document.getElementById('clearCanvasBtn').addEventListener('click', () => {
+      ctx.fillStyle = "#FFFFFF";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    });
+
+    // ==================================================
+    // ウィンドウドラッグ機能
+    // ==================================================
+    document.querySelectorAll('.window-header').forEach(header => {
+      header.addEventListener('mousedown', (e) => {
+        activeWindow = header.parentElement;
+        initialX = e.clientX;
+        initialY = e.clientY;
+        offsetX = activeWindow.getBoundingClientRect().left;
+        offsetY = activeWindow.getBoundingClientRect().top;
+        activeWindow.style.zIndex = 300;
+        // 他のウィンドウを背面に
+        document.querySelectorAll('.window, .office-window, .paint-window').forEach(w => {
+          if(w !== activeWindow) w.style.zIndex = 200;
+        });
+      });
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!activeWindow) return;
+      const dx = e.clientX - initialX;
+      const dy = e.clientY - initialY;
+      activeWindow.style.left = `${offsetX + dx}px`;
+      activeWindow.style.top = `${offsetY + dy}px`;
+    });
+    document.addEventListener('mouseup', () => activeWindow = null);
+
+    // ==================================================
+    // その他イベント
+    // ==================================================
+    document.addEventListener("click", (e) => {
+      customMenu.style.display = "none";
+      // スタートメニュー外クリックで閉じる
+      if (!startMenu.contains(e.target) && !e.target.matches('button[onclick="toggleMenu()"]')) {
+        startMenu.classList.add('opacity-0', 'scale-95');
+      }
+    });
+    document.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      customMenu.style.left = e.pageX + "px";
+      customMenu.style.top = e.pageY + "px";
+      customMenu.style.display = "block";
+    });
+
+    // 初期化
+    initDatabase();
+  </script>
+</body>
+</html>

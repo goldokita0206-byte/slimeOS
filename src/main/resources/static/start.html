@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スライムOS - 起動・ログイン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "メイリオ", "Meiryo", sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+        .screen {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        /* 起動画面 */
+        .boot-container {
+            background: #0a1a2f;
+            position: relative;
+            overflow: hidden;
+        }
+        .forest-bg {
+            width: 100%;
+            height: 100%;
+            background: url("image4.png") center / cover no-repeat;
+            opacity: 0.6;
+        }
+        .color-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(20, 60, 120, 0.7), rgba(10, 30, 80, 0.85));
+        }
+        .glow-title {
+            position: absolute;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3.2rem;
+            color: #e0f7ff;
+            text-shadow: 0 0 10px #80e0ff, 0 0 20px #40c0ff, 0 0 30px #20a0ff;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { text-shadow: 0 0 10px #80e0ff, 0 0 20px #40c0ff; }
+            50% { text-shadow: 0 0 15px #a0f0ff, 0 0 30px #60d0ff, 0 0 40px #30b0ff; }
+        }
+        .main-slime {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+        }
+        .slime-img {
+            width: 140px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(220, 245, 255, 0.6);
+            animation: rise 4s linear infinite;
+        }
+        .b1 { width: 20px; height: 20px; top: -20px; left: 20px; animation-delay: 0s; }
+        .b2 { width: 15px; height: 15px; top: 10px; left: -30px; animation-delay: 1s; }
+        .b3 { width: 25px; height: 25px; bottom: -15px; right: 10px; animation-delay: 2s; }
+        .b4 { width: 12px; height: 12px; bottom: 20px; right: -25px; animation-delay: 3s; }
+        @keyframes rise {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-80px) scale(1.2); opacity: 0; }
+        }
+        .small-slimes {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+        }
+        .small-slime img {
+            width: 60px;
+            animation: float 3.5s ease-in-out infinite;
+            animation-delay: calc(var(--i) * 0.5s);
+        }
+        .progress-wrap {
+            position: absolute;
+            bottom: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px;
+            text-align: center;
+            z-index: 2;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(180, 220, 255, 0.5);
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #60d0ff, #20a0ff);
+            transition: width 0.1s linear;
+            box-shadow: 0 0 8px #40c0ff;
+        }
+        .status-text {
+            margin-top: 10px;
+            color: #e0f7ff;
+            font-size: 1.1rem;
+            text-shadow: 0 0 5px rgba(100, 200, 255, 0.7);
+        }
+        /* ログイン画面 */
+        .login-container {
+            background: linear-gradient(135deg, #a8d8ff 0%, #64b5f6 100%);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            background: rgba(255, 255, 255, 0.88);
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(40, 150, 255, 0.4);
+            text-align: center;
+            width: 100%;
+            max-width: 360px;
+            backdrop-filter: blur(10px);
+            border: 2px solid #b3e5fc;
+        }
+        .login-box h2 {
+            color: #01579b;
+            margin-bottom: 1.2rem;
+        }
+        .login-slime img {
+            width: 80px;
+            margin-bottom: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+        .input-group {
+            margin-bottom: 1.2rem;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #01579b;
+            font-weight: bold;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #81d4fa;
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: 0.2s;
+        }
+        .input-group input:focus {
+            border-color: #29b6f6;
+            box-shadow: 0 0 8px rgba(41, 182, 246, 0.5);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: #29b6f6;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 0.5rem;
+        }
+        .login-btn:hover {
+            background: #0288d1;
+            box-shadow: 0 4px 12px rgba(2, 136, 209, 0.3);
+        }
+        .error-msg {
+            margin-top: 1rem;
+            font-weight: bold;
+            min-height: 1.4rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- 起動画面 -->
+    <div class="screen boot-container" id="bootScreen">
+        <div class="forest-bg"></div>
+        <div class="color-overlay"></div>
+        <h1 class="glow-title">スライムOS</h1>
+        <div class="main-slime">
+            <img src="image.png" alt="スライム" class="slime-img">
+            <div class="bubble b1"></div>
+            <div class="bubble b2"></div>
+            <div class="bubble b3"></div>
+            <div class="bubble b4"></div>
+        </div>
+        <div class="small-slimes">
+            <div class="small-slime" style="--i:1;"><img src="image.png" alt="スライム"></div>
+            <div class="small-slime" style="--i:2;"><img src="image.png" alt="スライム"></div>
+            <div class="small-slime" style="--i:3;"><img src="image.png" alt="スライム"></div>
+            <div class="small-slime" style="--i:4;"><img src="image.png" alt="スライム"></div>
+        </div>
+        <div class="progress-wrap">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <p class="status-text" id="statusText">起動中... <span id="percent">0%</span></p>
+        </div>
+    </div>
+    <!-- ログイン画面 -->
+	<div class="login-container" id="loginScreen">
+	    <h2>スライムOS ログイン</h2>
+	    <!-- ここを <form> タグで囲みます -->
+	    <form action="/login" method="post">
+	        <div class="input-group">
+	            <label>ユーザー名</label>
+	            <input type="text" name="username" id="user" placeholder="例: user" required>
+	        </div>
+	        <div class="input-group">
+	            <label>パスワード</label>
+	            <input type="password" name="password" id="password" placeholder="入力してください" required>
+	        </div>
+	        <button type="submit" class="login-btn">ログイン</button>
+	    </form>
+	    <p id="loginError" class="error-msg"></p>
+	</div>
+
+    <script>
+        // 起動処理
+        const progressFill = document.getElementById('progressFill');
+        const percentText = document.getElementById('percent');
+        const statusText = document.getElementById('statusText');
+        const bootScreen = document.getElementById('bootScreen');
+        const loginScreen = document.getElementById('loginScreen');
+
+        let progress = 0;
+        const bootTotalTime = 3000;
+        const stepTime = bootTotalTime / 100;
+
+        const bootTimer = setInterval(() => {
+            progress++;
+            progressFill.style.width = `${progress}%`;
+            percentText.textContent = `${progress}%`;
+            if (progress >= 100) {
+                clearInterval(bootTimer);
+                statusText.textContent = "起動完了";
+                setTimeout(() => {
+                    bootScreen.style.display = 'none';
+                    loginScreen.style.display = 'flex';
+                }, 600);
+            }
+        }, stepTime);
+
+        // ログイン処理
+        const loginBtn = document.getElementById('loginBtn');
+        const usernameInput = document.getElementById('user');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('loginError');
+
+        const validAccount = {
+            user: "user",
+            pass: "password"
+        };
+
+        function doLogin() {
+            const inputUser = usernameInput.value.trim();
+            const inputPass = passwordInput.value.trim();
+            if (inputUser === validAccount.user && inputPass === validAccount.pass) {
+                loginError.textContent = "✅ ログイン成功！";
+                loginError.style.color = "#2e7d32";
+                // ↓ ここで正しく slime.html に移動
+                setTimeout(() => {
+                    window.location.href = "slime.html";
+                }, 800);
+            } else {
+                loginError.textContent = "❌ ユーザー名またはパスワードが違います";
+                loginError.style.color = "#d32f2f";
+            }
+        }
+
+        loginBtn.addEventListener('click', doLogin);
+        passwordInput.addEventListener('keydown', (e) => {
+            if (e.key === "Enter") doLogin();
+        });
+    </script>
+</body>
+</html>

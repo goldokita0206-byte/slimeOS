@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        overflow: hidden;
+        background: #0f172a;
+        font-family: "Segoe UI", "メイリオ", sans-serif;
+      }
+
+      /* デスクトップ背景 */
+      .desktop {
+        width: 100vw;
+        height: 100vh;
+        background-image: url("image4.png");
+        background-size: cover;
+        background-position: center;
+        position: relative;
+      }
+
+      /* スライムの浮遊アニメーション */
+      .slime {
+        position: absolute;
+        animation: float 6s ease-in-out infinite;
+        pointer-events: auto;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        z-index: 20;
+      }
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-25px); }
+      }
+      .slime.jump {
+        animation: jump 0.3s ease;
+      }
+      @keyframes jump {
+        0% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-50px) scale(1.1); }
+        100% { transform: translateY(0) scale(1); }
+      }
+
+      /* ガラス調メニュー */
+      .menu-glass {
+        background: rgba(30, 41, 59, 0.85);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
+      .menu-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      /* 右上ステータスウィジェット */
+      .status-widget {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 14px;
+        padding: 16px 20px;
+        min-width: 170px;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        z-index: 30;
+      }
+      .time-display {
+        font-size: 30px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 6px;
+        letter-spacing: 1px;
+      }
+      .date-display {
+        font-size: 14px;
+        text-align: center;
+        opacity: 0.9;
+        margin-bottom: 12px;
+      }
+      .weather-display {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .weather-icon {
+        font-size: 38px;
+      }
+      .weather-info {
+        text-align: right;
+      }
+      .weather-temp {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .weather-location {
+        font-size: 12px;
+        opacity: 0.85;
+        margin-top: 2px;
+      }
+
+      /* 泡アニメーション */
+      #bubble-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .bubble {
+        position: absolute;
+        bottom: -50px;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        animation: rise linear infinite;
+      }
+      @keyframes rise {
+        0% { transform: translateY(0); opacity: 0; }
+        10% { opacity: 0.6; }
+        90% { opacity: 0.3; }
+        100% { transform: translateY(-110vh); opacity: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- デスクトップ背景 -->
+    <div class="desktop">
+      <!-- スライムたち -->
+      <div class="slime" style="top: 20%; left: 15%; animation-delay: 0s" onclick="jumpSlime(this)">
+        <img src="image.png" class="w-16 h-auto" alt="スライム" />
+      </div>
+      <div class="slime" style="top: 50%; left: 70%; animation-delay: 2s" onclick="jumpSlime(this)">
+        <img src="image.png" class="w-20 h-auto" alt="スライム" />
+      </div>
+      <div class="slime" style="top: 70%; left: 40%; animation-delay: 4s" onclick="jumpSlime(this)">
+        <img src="image.png" class="w-16 h-auto" alt="スライム" />
+      </div>
+      <div class="slime" style="top: 40%; left: 15%; animation-delay: 1s" onclick="jumpSlime(this)">
+        <img src="image.png" class="w-10 h-auto" alt="スライム" />
+      </div>
+      <div class="slime" style="top: 60%; left: 70%; animation-delay: 3s" onclick="jumpSlime(this)">
+        <img src="image.png" class="w-24 h-auto" alt="スライム" />
+      </div>
+      <div class="slime" style="top: 80%; left: 40%; animation-delay: 5s" onclick="jumpSlime(this)">
+        <img src="image.png" class="w-18 h-auto" alt="スライム" />
+      </div>
+    </div>
+
+    <!-- スタートメニュー -->
+    <div id="startMenu" class="menu-glass absolute bottom-16 left-4 w-72 p-6 rounded-2xl text-white shadow-2xl transition-all duration-500 opacity-0 scale-95 origin-bottom-left z-40">
+      <h2 class="text-xl font-bold mb-4 text-blue-300">✨ Slime OS Menu ✨</h2>
+      <div class="space-y-2">
+        <a href="Home.html" class="menu-link p-3 hover:bg-white/10 rounded-lg transition">🌿 スライムの森</a>
+        <a href="mizube.html" class="menu-link p-3 hover:bg-white/10 rounded-lg transition">💧 水辺の広場</a>
+        <a href="settei.html" class="menu-link p-3 hover:bg-white/10 rounded-lg transition">⚙️ 設定</a>
+        <a href="karennda2-.html" class="menu-link p-3 hover:bg-white/10 rounded-lg transition">📅 カレンダー</a>
+        <a href="office.html" class="menu-link p-3 hover:bg-white/10 rounded-lg transition">📚 Office</a>
+        <button onclick="changeToForest()" class="w-full text-left p-3 hover:bg-white/10 rounded-lg transition">🌲 背景を森に変更</button>
+      </div>
+    </div>
+
+    <!-- 下部タスクバー -->
+    <div class="absolute bottom-0 w-full h-14 bg-black/40 backdrop-blur-md flex items-center px-4 z-50">
+      <button onclick="toggleMenu()" class="text-white hover:bg-white/20 p-3 rounded-xl transition font-medium">Slime OS</button>
+      <div class="ml-auto px-4 text-white text-sm" id="clockDisplay">00:00</div>
+    </div>
+
+    <!-- 右上時計・天気ウィジェット -->
+    <div class="status-widget">
+      <div class="time-display" id="timeText"></div>
+      <div class="date-display" id="dateText"></div>
+      <div class="weather-display">
+        <div class="weather-icon" id="weatherIcon">⛅</div>
+        <div class="weather-info">
+          <div class="weather-temp" id="weatherTemp">20°C</div>
+          <div class="weather-location" id="weatherArea">大分県 大分市</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 泡アニメーション -->
+    <div id="bubble-container"></div>
+
+    <script>
+      // スライムのジャンプ処理
+      function jumpSlime(element) {
+        element.classList.add("jump");
+        setTimeout(() => element.classList.remove("jump"), 300);
+      }
+
+      // メニュー開閉
+      function toggleMenu() {
+        const menu = document.getElementById("startMenu");
+        menu.classList.toggle("opacity-0");
+        menu.classList.toggle("scale-95");
+      }
+
+      // 背景を森に変更
+      function changeToForest() {
+        const bg = document.querySelector(".desktop");
+        bg.style.backgroundImage = "url('suraimu mori.png')";
+        bg.style.backgroundSize = "cover";
+        bg.style.backgroundPosition = "center";
+      }
+
+      // 時計更新
+      function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" });
+        const dateStr = now.toLocaleDateString("ja-JP", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+          weekday: "short"
+        });
+        document.getElementById("timeText").textContent = timeStr;
+        document.getElementById("dateText").textContent = dateStr;
+        document.getElementById("clockDisplay").textContent = timeStr;
+      }
+
+      // 天気情報初期表示
+      function initWeather() {
+        document.getElementById("weatherTemp").textContent = "20°C";
+        document.getElementById("weatherIcon").textContent = "⛅";
+        document.getElementById("weatherArea").textContent = "大分県 大分市";
+      }
+
+      // 泡を生成
+      function createBubble() {
+        const container = document.getElementById("bubble-container");
+        const bubble = document.createElement("div");
+        const size = Math.random() * 30 + 10 + "px";
+        bubble.className = "bubble";
+        bubble.style.width = size;
+        bubble.style.height = size;
+        bubble.style.left = Math.random() * 100 + "vw";
+        bubble.style.animationDuration = Math.random() * 5 + 5 + "s";
+        container.appendChild(bubble);
+        setTimeout(() => bubble.remove(), 10000);
+      }
+
+      // ページ読み込み後に初期化
+      window.addEventListener("load", () => {
+        updateClock();
+        initWeather();
+        setInterval(updateClock, 60000);
+        setInterval(createBubble, 800);
+      });
+
+      // メニュー外クリックで閉じる
+      document.addEventListener("click", (e) => {
+        const menu = document.getElementById("startMenu");
+        const button = document.querySelector('button[onclick="toggleMenu()"]');
+        if (!menu.contains(e.target) && !button.contains(e.target)) {
+          menu.classList.add("opacity-0", "scale-95");
+        }
+      });
+    </script>
+  </body>
+</html>

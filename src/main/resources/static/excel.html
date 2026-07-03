@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>自作計算シート</title>
+    <style>
+        body { font-family: sans-serif; margin: 10px; background-color: #f4f4f4; }
+        .toolbar { background: #2e7d32; color: white; padding: 10px; display: flex; gap: 10px; align-items: center; }
+        .formula-bar { margin: 10px 0; background: #fff; padding: 10px; border: 1px solid #ccc; }
+        #formula-input { width: 300px; padding: 5px; }
+        table { border-collapse: collapse; background-color: #fff; }
+        td, th { border: 1px solid #ccc; width: 100px; height: 35px; text-align: center; }
+        th { background-color: #e0e0e0; font-weight: bold; }
+        td { cursor: pointer; }
+        td:focus { outline: 2px solid #2e7d32; background-color: #e8f5e9; }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <button>保存</button>
+        <button id="recalc">再計算</button>
+        <span>数式は =A1+B1 のように入力できます</span>
+    </div>
+    <div class="formula-bar">
+        数式: <input type="text" id="formula-input" placeholder="ここに数式を入力...">
+    </div>
+    <table id="spreadsheet">
+        <thead>
+            <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr>
+        </thead>
+        <tbody>
+            <!-- JavaScriptで生成 -->
+        </tbody>
+    </table>
+
+    <script>
+        const tbody = document.querySelector('#spreadsheet tbody');
+        const formulaInput = document.getElementById('formula-input');
+        let selectedCell = null;
+
+        // テーブルの生成
+        for (let i = 1; i <= 15; i++) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<th>${i}</th>` + '<td contenteditable="true"></td>'.repeat(10);
+            tbody.appendChild(tr);
+        }
+
+        // セル選択処理
+        document.querySelectorAll('td').forEach(td => {
+            td.addEventListener('click', () => {
+                selectedCell = td;
+            });
+        });
+
+        // 再計算処理
+        document.getElementById('recalc').addEventListener('click', () => {
+            const formula = formulaInput.value;
+            if (formula.startsWith('=')) {
+                try {
+                    // 数式中のセル参照(A1, B2など)を数値に置換
+                    const expression = formula.substring(1).replace(/[A-J]([1-9]|1[0-5])/g, (match) => {
+                        const col = match.charCodeAt(0) - 65;
+                        const row = parseInt(match.substring(1)) - 1;
+                        const cell = tbody.rows[row].cells[col + 1];
+                        return parseFloat(cell.innerText) || 0;
+                    });
+                    
+                    if (selectedCell) {
+                        selectedCell.innerText = eval(expression);
+                    }
+                } catch (e) {
+                    alert("数式エラーです: " + e.message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

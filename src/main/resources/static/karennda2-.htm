@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>カレンダー - Slime OS</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", sans-serif; }
+    body {
+      background: url("suraimu mori.png") no-repeat center;
+      background-size: cover;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(12px);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #2d3748;
+      margin-bottom: 1.5rem;
+    }
+    #cal {
+      text-align: center;
+      font-size: 1.2rem;
+      color: #2d3748;
+      line-height: 2;
+    }
+    .open-full {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.2rem;
+      background: #FF9800;
+      color: white;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>📅 カレンダー</h2>
+    <div id="cal"></div>
+    <a href="https://calendar.google.com/calendar/r" target="_blank" class="open-full">
+      📆 Googleカレンダーを開く
+    </a>
+  </div>
+
+  <script>
+    function showCalendar() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth() + 1;
+      const date = now.getDate();
+      const week = ['日','月','火','水','木','金','土'][now.getDay()];
+      document.getElementById('cal').innerHTML = `
+        <p>今日は ${year}年 ${month}月 ${date}日 (${week})</p>
+        <p>現在の月: ${year}年 ${month}月</p>
+      `;
+    }
+    showCalendar();
+  </script>
+</body>
+</html>

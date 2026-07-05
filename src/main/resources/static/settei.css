@@ -3,7 +3,7 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
-background-image: url("https://raw.githubusercontent.com/goldokita0206-byte/slimeOS/main/taki.jpeg"); /* 画像をGitHubから読み込み */
+  background-image: url("https://raw.githubusercontent.com/goldokita0206-byte/slimeOS/main/image4.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

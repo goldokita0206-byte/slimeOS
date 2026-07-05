@@ -31,8 +31,10 @@
         .forest-bg {
             width: 100%;
             height: 100%;
-            /* GitHubからimage4.pngを読み込み */
-            background: url("https://raw.githubusercontent.com/goldokita0206-byte/slimeOS/main/image4.png") center / cover no-repeat;
+            background-image: url("image4.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             opacity: 0.6;
         }
         .color-overlay {
@@ -132,12 +134,28 @@
         }
         /* ログイン画面 */
         .login-container {
-            background: linear-gradient(135deg, #a8d8ff 0%, #64b5f6 100%);
+            background-image: url("image4.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             display: none;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+        .login-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(168, 216, 255, 0.75);
+            z-index: 1;
         }
         .login-box {
+            position: relative;
+            z-index: 2;
             background: rgba(255, 255, 255, 0.88);
             padding: 2.5rem;
             border-radius: 20px;
@@ -231,22 +249,28 @@
         </div>
     </div>
     <!-- ログイン画面 -->
-	<div class="login-container" id="loginScreen">
-	    <h2>スライムOS ログイン</h2>
-	    <!-- ここを <form> タグで囲みます -->
-	    <form action="/login" method="post">
-	        <div class="input-group">
-	            <label>ユーザー名</label>
-	            <input type="text" name="username" id="user" placeholder="例: user" required>
-	        </div>
-	        <div class="input-group">
-	            <label>パスワード</label>
-	            <input type="password" name="password" id="password" placeholder="入力してください" required>
-	        </div>
-	        <button type="submit" class="login-btn">ログイン</button>
-	    </form>
-	    <p id="loginError" class="error-msg"></p>
-	</div>
+    <div class="screen login-container" id="loginScreen">
+        <div class="login-box">
+            <div class="login-slime">
+                <img src="image.png" alt="スライム">
+            </div>
+            <h2>スライムOS ログイン</h2>
+            <!-- formのactionを空にしてJSで制御 -->
+            <form id="loginForm" action="" method="get">
+                <div class="input-group">
+                    <label>ユーザー名</label>
+                    <input type="text" name="username" id="user" placeholder="user" required>
+                </div>
+                <div class="input-group">
+                    <label>パスワード</label>
+                    <input type="password" name="password" id="password" placeholder="password" required>
+                </div>
+                <!-- type="submit" → type="button" に変更でページ再読み込みを防止 -->
+                <button type="button" class="login-btn" id="loginBtn">ログイン</button>
+            </form>
+            <p id="loginError" class="error-msg"></p>
+        </div>
+    </div>
 
     <script>
         // 起動処理
@@ -275,33 +299,34 @@
         }, stepTime);
 
         // ログイン処理
-        const loginBtn = document.querySelector('.login-btn');
+        const loginBtn = document.getElementById('loginBtn');
         const usernameInput = document.getElementById('user');
         const passwordInput = document.getElementById('password');
         const loginError = document.getElementById('loginError');
 
+        // 正しいアカウント情報
         const validAccount = {
             user: "user",
             pass: "password"
         };
 
-        function doLogin() {
-            const inputUser = usernameInput.value.trim();
-            const inputPass = passwordInput.value.trim();
-            if (inputUser === validAccount.user && inputPass === validAccount.pass) {
-                loginError.textContent = "✅ ログイン成功！";
-                loginError.style.color = "#2e7d32";
-                // ↓ 遷移先を slime.html に修正
-                setTimeout(() => {
-                    window.location.href = "slime.html";
-                }, 800);
-            } else {
-                loginError.textContent = "❌ ユーザー名またはパスワードが違います";
-                loginError.style.color = "#d32f2f";
-            }
-        }
+		function doLogin() {
+		    const inputUser = usernameInput.value.trim();
+		    const inputPass = passwordInput.value.trim();
+		    if (inputUser === validAccount.user && inputPass === validAccount.pass) {
+		        loginError.textContent = "✅ ログイン成功！";
+		        loginError.style.color = "#2e7d32";
+		        // ↓ 遷移先を slime.html に変更
+		        setTimeout(() => {
+		            window.location.href = "slime.html";
+		        }, 800);
+		    } else {
+		        loginError.textContent = "❌ ユーザー名またはパスワードが違います";
+		        loginError.style.color = "#d32f2f";
+		    }
+		}
 
-        // ボタンクリックとEnterキーでログイン
+        // イベント登録
         loginBtn.addEventListener('click', doLogin);
         passwordInput.addEventListener('keydown', (e) => {
             if (e.key === "Enter") doLogin();

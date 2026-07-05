@@ -1,315 +1,238 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Slime OS - 設定</title>
-    <link rel="stylesheet" href="settei.css" />
     <!-- Font Awesome 読み込み -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "メイリオ", Meiryo, sans-serif;
-      }
-      body {
-        height: 100vh;
-        /* GitHub上の画像を直接読み込み（ローカルに画像不要） */
-        background-image: url("https://raw.githubusercontent.com/goldokita0206-byte/slimeOS/main/taki.jpeg");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .settings-container {
-        width: 90%;
-        max-width: 900px;
-        background: rgba(164, 247, 178, 0.15);
-        backdrop-filter: blur(16px);
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        padding: 2rem;
-        color: #0b0333;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        position: relative;
-        z-index: 10; /* シャボン玉より上に表示 */
-      }
-      .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-      }
-      .user-info {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-      }
-      .avatar {
-        width: 50px;
-        height: 50px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-      }
-      .user-details h1 {
-        font-size: 1.2rem;
-        margin-bottom: 0.2rem;
-      }
-      .user-details p {
-        font-size: 0.85rem;
-        opacity: 0.8;
-        margin-bottom: 0.1rem;
-      }
-      .user-details a {
-        font-size: 0.85rem;
-        color: #b8e1ff;
-        text-decoration: none;
-      }
-      .promo-buttons {
-        display: flex;
-        gap: 0.8rem;
-      }
-      .btn-primary {
-        background: #4ade80;
-        color: #166534;
-        border: none;
-        padding: 0.5rem 1.2rem;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      .btn-link {
-        background: rgba(255, 255, 255, 0.1);
-        color: #fff;
-        border: none;
-        padding: 0.5rem 1.2rem;
-        border-radius: 6px;
-        cursor: pointer;
-      }
-      .settings-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1rem;
-      }
-      .grid-item {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 1.2rem;
-        display: flex;
-        align-items: flex-start;
-        gap: 0.8rem;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        cursor: pointer;
-        transition: all 0.2s ease;
-      }
-      .grid-item:hover {
-        background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-      }
-      .icon-blue {
-        font-size: 1.5rem;
-        color: #580ae9;
-        margin-top: 0.2rem;
-      }
-      .text h3 {
-        font-size: 1rem;
-        margin-bottom: 0.3rem;
-      }
-      .text p {
-        font-size: 0.8rem;
-        opacity: 0.85;
-        line-height: 1.4;
-      }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Tailwind CSS 読み込み -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        // Tailwind カスタム設定
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slime: {
+                            blue: '#0078d7',
+                            lightblue: '#1a98e9',
+                            dark: '#1e293b',
+                        }
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+        }
     </style>
-    <!-- シャボン玉アニメーション用：元の動き完全維持 -->
-<style>
-/* シャボン玉のコンテナ：画面全体に重ねて表示 */
-.bubble-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  pointer-events: none; /* クリックなどを透過して下のアイコンが使える */
-  z-index: 5; /* 背景より上、設定項目より下に調整済み */
-}
 
-/* シャボン玉本体 */
-.bubble {
-  position: absolute;
-  bottom: -50px; /* 画面外下から出現 */
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-  box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.3),
-              0 0 12px rgba(173, 216, 230, 0.4);
-  animation: rise 8s linear infinite;
-}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            font-family: "Segoe UI", sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            /* 背景画像 */
+            background-image: url('image4.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        .icon-blue {
+            color: #0078d7;
+        }
+        .menu-glass { 
+            background: rgba(30, 41, 59, 0.85); 
+            backdrop-filter: blur(15px); 
+        }
+        .grid-item {
+            transition: all 0.2s ease;
+        }
+        .grid-item:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="text-white">
 
-/* 上昇＋ゆらぎ＋消えるアニメーション */
-@keyframes rise {
-  0% {
-    transform: translateY(0) translateX(0) scale(0.5);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.8;
-  }
-  90% {
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateY(-110vh) translateX(calc(-50px + 100px * var(--drift))) scale(1.1);
-    opacity: 0;
-  }
-}
-</style>
+    <div class="settings-container w-full h-full overflow-y-auto scrollbar-hide p-6 bg-black/30 backdrop-blur-xs">
+        <!-- ヘッダーエリア -->
+        <header class="bg-white/10 backdrop-blur-md rounded-xl p-6 mb-8 shadow-lg border border-white/20">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="user-info flex items-center gap-4">
+                    <div class="avatar w-16 h-16 rounded-full bg-slime-blue/30 flex items-center justify-center text-3xl">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <h1 class="text-2xl font-bold">suraim os</h1>
+                        <p class="text-white/70">ローカル アカウント</p>
+                        <a href="#" class="text-slime-lightblue hover:underline text-sm">サインイン</a>
+                    </div>
+                </div>
+                <div class="promo-buttons flex gap-3">
+                    <button class="bg-slime-blue hover:bg-slime-lightblue transition px-5 py-2 rounded-lg font-medium shadow-md">
+                        Settings
+                    </button>
+                    <button class="bg-white/10 hover:bg-white/20 transition px-5 py-2 rounded-lg font-medium border border-white/20">
+                        スキップ
+                    </button>
+                </div>
+            </div>
+        </header>
 
-<!-- シャボン玉を生成するJavaScript：元の動作完全維持 -->
-<script>
-function createBubble() {
-  const container = document.querySelector('.bubble-container');
-  if (!container) return;
+        <!-- メニューグリッド -->
+        <main class="settings-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
+                <i class="fas fa-laptop icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">システム</h3>
+                    <p class="text-white/70 text-sm">ディスプレイ、サウンド、通知、電源</p>
+                </div>
+            </div>
 
-  // ランダムな大きさ・位置・速度・揺れ幅
-  const size = Math.random() * 30 + 15; // 15px～45px
-  const bubble = document.createElement('div');
-  bubble.classList.add('bubble');
-  
-  // スタイルをランダム設定
-  bubble.style.width = size + 'px';
-  bubble.style.height = size + 'px';
-  bubble.style.left = Math.random() * 100 + '%';
-  bubble.style.animationDuration = (Math.random() * 4 + 6) + 's'; // 6～10秒で上昇
-  bubble.style.animationDelay = Math.random() * 2 + 's';
-  bubble.style.setProperty('--drift', Math.random()); // 左右の揺れ
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
+                <i class="fas fa-keyboard icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">デバイス</h3>
+                    <p class="text-white/70 text-sm">Bluetooth、プリンター、マウス</p>
+                </div>
+            </div>
 
-  container.appendChild(bubble);
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
+                <i class="fas fa-mobile-alt icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">電話</h3>
+                    <p class="text-white/70 text-sm">Android、iPhone のリンク</p>
+                </div>
+            </div>
 
-  // アニメーション終了後に要素を削除
-  setTimeout(() => bubble.remove(), 12000);
-}
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
+                <i class="fas fa-globe icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">ネットワークとインターネット</h3>
+                    <p class="text-white/70 text-sm">Wi-Fi、機内モード、VPN</p>
+                </div>
+            </div>
 
-// ページ読み込み後、一定間隔でシャボン玉を生成
-window.addEventListener('load', () => {
-  // コンテナがなければ作成
-  if (!document.querySelector('.bubble-container')) {
-    const bubbleArea = document.createElement('div');
-    bubbleArea.classList.add('bubble-container');
-    document.body.appendChild(bubbleArea);
-  }
-  // 0.3秒ごとに1つ生成
-  setInterval(createBubble, 300);
-});
-</script>
-    <div class="settings-container">
-      <!-- ヘッダーエリア -->
-      <header class="header">
-        <div class="user-info">
-          <div class="avatar"><i class="fas fa-user"></i></div>
-          <div class="user-details">
-            <h1>suraim os</h1>
-            <p>ローカル アカウント</p>
-            <a href="#">サインイン</a>
-          </div>
-        </div>
-        <div class="promo-banner">
-          <div class="promo-buttons">
-            <button class="btn-primary" onclick="openWindowsSetting('')">設定トップ</button>
-            <button class="btn-link">スキップ</button>
-          </div>
-        </div>
-      </header>
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
+                <i class="fas fa-paint-brush icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">個人用設定</h3>
+                    <p class="text-white/70 text-sm">背景、ロック画面、色</p>
+                </div>
+            </div>
 
-      <!-- メニューグリッド：元の項目＋言語項目追加 -->
-      <main class="settings-grid">
-        <div class="grid-item" onclick="openWindowsSetting('system')">
-          <i class="fas fa-laptop icon-blue"></i>
-          <div class="text">
-            <h3>システム</h3>
-            <p>ディスプレイ、サウンド、通知、電源</p>
-          </div>
-        </div>
-        <div class="grid-item" onclick="openWindowsSetting('devices')">
-          <i class="fas fa-keyboard icon-blue"></i>
-          <div class="text">
-            <h3>デバイス</h3>
-            <p>Bluetooth、プリンター、マウス</p>
-          </div>
-        </div>
-        <div class="grid-item" onclick="openLangSettings()">
-          <i class="fas fa-language icon-blue"></i>
-          <div class="text">
-            <h3>言語</h3>
-            <p>表示言語・地域・キーボードの設定</p>
-          </div>
-        </div>
-        <div class="grid-item" onclick="openWindowsSetting('mobile-devices')">
-          <i class="fas fa-mobile-alt icon-blue"></i>
-          <div class="text">
-            <h3>電話</h3>
-            <p>Android、iPhone のリンク</p>
-          </div>
-        </div>
-        <div class="grid-item" onclick="openWindowsSetting('network-internet')">
-          <i class="fas fa-globe icon-blue"></i>
-          <div class="text">
-            <h3>ネットワークとインターネット</h3>
-            <p>Wi‑Fi、機内モード、VPN</p>
-          </div>
-        </div>
-        <div class="grid-item" onclick="openWindowsSetting('personalization')">
-          <i class="fas fa-paint-brush icon-blue"></i>
-          <div class="text">
-            <h3>個人用設定</h3>
-            <p>背景、ロック画面、色</p>
-          </div>
-        </div>
-        <div class="grid-item" onclick="openWindowsSetting('apps')">
-          <i class="fas fa-th-list icon-blue"></i>
-          <div class="text">
-            <h3>アプリ</h3>
-            <p>アンインストール、既定値、オプション機能</p>
-          </div>
-        </div>
-      </main>
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
+                <i class="fas fa-th-list icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">アプリ</h3>
+                    <p class="text-white/70 text-sm">アンインストール、既定値、オプション機能</p>
+                </div>
+            </div>
+
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
+                <i class="fas fa-shield-alt icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">プライバシーとセキュリティ</h3>
+                    <p class="text-white/70 text-sm">アカウント、アクセス許可、セキュリティ</p>
+                </div>
+            </div>
+
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
+                <i class="fas fa-cog icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">更新とセキュリティ</h3>
+                    <p class="text-white/70 text-sm">Slime OS の更新、バックアップ、回復</p>
+                </div>
+            </div>
+
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
+                <i class="fas fa-language icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">時刻と言語</h3>
+                    <p class="text-white/70 text-sm">日付、時刻、地域、言語</p>
+                </div>
+            </div>
+        </main>
     </div>
 
+    <!-- スタートメニュー -->
+    <div id="startMenu" class="menu-glass absolute bottom-16 left-4 w-72 p-6 rounded-2xl text-white shadow-2xl transition-all duration-500 opacity-0 scale-95 origin-bottom-left z-50">
+        <h2 class="text-xl font-bold mb-4 text-blue-300">✨ Slime OS Menu ✨</h2>
+        <div class="space-y-3">
+            <a href="Home.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">🌿 スライムの森</a>
+            <a href="mizube.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">💧 水辺の広場</a>
+            <a href="settei.html" class="block w-full text-left p-3 bg-white/10 rounded-lg font-medium">⚙️ 設定</a>
+            <a href="karennda2-.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">📅 カレンダー</a>
+            <a href="office.html" class="block w-full text-left p-3 hover:bg-white/10 rounded-lg transition">📚 Office</a>
+        </div>
+    </div>
+    
+    <!-- タスクバー -->
+    <div class="absolute bottom-0 left-0 w-full h-14 bg-black/40 backdrop-blur-md flex items-center px-4 z-50 border-t border-white/10">
+        <button onclick="toggleMenu()" class="text-white hover:bg-white/20 p-3 rounded-xl transition font-bold">
+            Slime OS
+        </button>
+        <div class="ml-auto text-white/80 text-sm">
+            <span id="currentTime">2026/06/17 16:40</span>
+        </div>
+    </div>
+    
     <script>
-      // Windows 10/11 の実際の設定画面を開く
-      function openWindowsSetting(page) {
-        // Windows公式の「ms-settings:」プロトコルを使用
-        const settingsMap = {
-          '': 'ms-settings:',                     // 設定トップ
-          'system': 'ms-settings:display',        // システム > ディスプレイ
-          'devices': 'ms-settings:bluetooth',    // デバイス > Bluetooth
-          'mobile-devices': 'ms-settings:mobile-devices', // 電話
-          'network-internet': 'ms-settings:network', // ネットワーク
-          'personalization': 'ms-settings:personalization', // 個人用設定
-          'apps': 'ms-settings:appsfeatures'     // アプリ
-        };
+        // スタートメニューの開閉
+        function toggleMenu() {
+            const menu = document.getElementById('startMenu');
+            menu.classList.toggle('opacity-0');
+            menu.classList.toggle('scale-95');                                                                                                                                                                                             
+        }
 
-        const targetUrl = settingsMap[page] || 'ms-settings:';
-        // プロトコルを実行して設定を起動
-        window.open(targetUrl, '_self');
-      }
+        // メニュー外クリックで閉じる
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('startMenu');
+            const button = document.querySelector('button[onclick="toggleMenu()"]');
+            if (!menu.contains(e.target) && !button.contains(e.target)) {
+                menu.classList.add('opacity-0', 'scale-95');
+            }
+        });
 
-      // 言語設定を開く関数（追加）
-      function openLangSettings() {
-        window.open('ms-settings:regionlanguage', '_self');
-      }
+        // 時計表示
+        function updateTime() {
+            const now = new Date();
+            const timeStr = now.getFullYear() + '/' + 
+                            String(now.getMonth()+1).padStart(2,'0') + '/' + 
+                            String(now.getDate()).padStart(2,'0') + ' ' + 
+                            String(now.getHours()).padStart(2,'0') + ':' + 
+                            String(now.getMinutes()).padStart(2,'0');
+            document.getElementById('currentTime').innerText = timeStr;
+        }
+        updateTime();
+        setInterval(updateTime, 60000);
     </script>
-  </body>
-</html>
+
+    <script src="settei.js"></script>
+</body>                                         
+             

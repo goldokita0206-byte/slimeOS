@@ -55,7 +55,7 @@
             font-family: "Segoe UI", sans-serif;
             height: 100vh;
             overflow: hidden;
-            /* 背景画像 */
+            /* 背景画像：現状のまま保持 */
             background-image: url('image4.png');
             background-size: cover;
             background-position: center;
@@ -105,64 +105,61 @@
         </header>
 
         <!-- メニューグリッド -->
-		< class="settings-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-		           <!-- システム -->
-		           <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('system')">
-		               <i class="fas fa-laptop icon-blue text-3xl mt-1"></i>
-		               <div><h3 class="text-lg font-semibold mb-1">システム</h3><p class="text-white/70 text-sm">ディスプレイ、サウンド、通知、電源</p></div>
-		           </div>
+        <div class="settings-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- システム -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('system')">
+                <i class="fas fa-laptop icon-blue text-3xl mt-1"></i>
+                <div><h3 class="text-lg font-semibold mb-1">システム</h3><p class="text-white/70 text-sm">ディスプレイ、サウンド、通知、電源</p></div>
+            </div>
 
-		           <!-- デバイス -->
-		           <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('devices')">
-		               <i class="fas fa-keyboard icon-blue text-3xl mt-1"></i>
-		               <div><h3 class="text-lg font-semibold mb-1">デバイス</h3><p class="text-white/70 text-sm">Bluetooth、プリンター、マウス</p></div>
-		           </div>
+            <!-- デバイス -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('devices')">
+                <i class="fas fa-keyboard icon-blue text-3xl mt-1"></i>
+                <div><h3 class="text-lg font-semibold mb-1">デバイス</h3><p class="text-white/70 text-sm">Bluetooth、プリンター、マウス</p></div>
+            </div>
 
-		           <!-- 言語 -->
-		           <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('language')">
-		               <i class="fas fa-language icon-blue text-3xl mt-1"></i>
-		               <div><h3 class="text-lg font-semibold mb-1">言語</h3><p class="text-white/70 text-sm">表示言語・地域・キーボードの設定</p></div>
-		           </div>
+            <!-- 言語 -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('language')">
+                <i class="fas fa-language icon-blue text-3xl mt-1"></i>
+                <div><h3 class="text-lg font-semibold mb-1">言語</h3><p class="text-white/70 text-sm">表示言語・地域・キーボードの設定</p></div>
+            </div>
 
-		           <!-- ネットワーク -->
-		           <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('network')">
-		               <i class="fas fa-globe icon-blue text-3xl mt-1"></i>
-		               <div><h3 class="text-lg font-semibold mb-1">ネットワークとインターネット</h3><p class="text-white/70 text-sm">Wi-Fi、機内モード、VPN</p></div>
-		           </div>
+            <!-- ネットワーク -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('network')">
+                <i class="fas fa-globe icon-blue text-3xl mt-1"></i>
+                <div><h3 class="text-lg font-semibold mb-1">ネットワークとインターネット</h3><p class="text-white/70 text-sm">Wi-Fi、機内モード、VPN</p></div>
+            </div>
 
-		           <!-- 個人用設定 -->
-		           <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('personal')">
-		               <i class="fas fa-paint-brush icon-blue text-3xl mt-1"></i>
-		               <div><h3 class="text-lg font-semibold mb-1">個人用設定</h3><p class="text-white/70 text-sm">背景、ロック画面、色</p></div>
-		           </div>
+            <!-- 個人用設定 -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('personal')">
+                <i class="fas fa-paint-brush icon-blue text-3xl mt-1"></i>
+                <div><h3 class="text-lg font-semibold mb-1">個人用設定</h3><p class="text-white/70 text-sm">背景、ロック画面、色</p></div>
+            </div>
 
-		           <!-- アプリ -->
-		           <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('apps')">
-		               <i class="fas fa-th-list icon-blue text-3xl mt-1"></i>
-		               <div><h3 class="text-lg font-semibold mb-1">アプリ</h3><p class="text-white/70 text-sm">アンインストール、既定値、オプション機能</p></div>
-		           </div>
+            <!-- アプリ -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('apps')">
+                <i class="fas fa-th-list icon-blue text-3xl mt-1"></i>
+                <div><h3 class="text-lg font-semibold mb-1">アプリ</h3><p class="text-white/70 text-sm">アンインストール、既定値、オプション機能</p></div>
+            </div>
 
-		           <!-- プライバシー -->
-		           <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('privacy')">
-		               <i class="fas fa-shield-alt icon-blue text-3xl mt-1"></i>
-		               <div><h3 class="text-lg font-semibold mb-1">プライバシーとセキュリティ</h3><p class="text-white/70 text-sm">アカウント、アクセス許可、セキュリティ</p></div>
-		           </div>
+            <!-- プライバシー -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('privacy')">
+                <i class="fas fa-shield-alt icon-blue text-3xl mt-1"></i>
+                <div><h3 class="text-lg font-semibold mb-1">プライバシーとセキュリティ</h3><p class="text-white/70 text-sm">アカウント、アクセス許可、セキュリティ</p></div>
+            </div>
 
-		           <!-- 更新 -->
-		           <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('update')">
-		               <i class="fas fa-cog icon-blue text-3xl mt-1"></i>
-		               <div><h3 class="text-lg font-semibold mb-1">更新とセキュリティ</h3><p class="text-white/70 text-sm">Slime OS の更新、バックアップ、回復</p></div>
-		           </div>
+            <!-- 更新 -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('update')">
+                <i class="fas fa-cog icon-blue text-3xl mt-1"></i>
+                <div><h3 class="text-lg font-semibold mb-1">更新とセキュリティ</h3><p class="text-white/70 text-sm">Slime OS の更新、バックアップ、回復</p></div>
+            </div>
 
-		           <!-- 時刻と言語 -->
-		           <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('time')">
-		               <i class="fas fa-clock icon-blue text-3xl mt-1"></i>
-		               <div><h3 class="text-lg font-semibold mb-1">時刻と言語</h3><p class="text-white/70 text-sm">日付、時刻、地域、言語</p></div>
-		           </div>
-		      
-		   </div>
-            
-        </main>
+            <!-- 時刻と言語 -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openSetting('time')">
+                <i class="fas fa-clock icon-blue text-3xl mt-1"></i>
+                <div><h3 class="text-lg font-semibold mb-1">時刻と言語</h3><p class="text-white/70 text-sm">日付、時刻、地域、言語</p></div>
+            </div>
+        </div>
     </div>
 
     <!-- スタートメニュー -->
@@ -192,7 +189,7 @@
         function toggleMenu() {
             const menu = document.getElementById('startMenu');
             menu.classList.toggle('opacity-0');
-            menu.classList.toggle('scale-95');                                                                                                                                                                                             
+            menu.classList.toggle('scale-95');
         }
 
         // メニュー外クリックで閉じる
@@ -216,8 +213,46 @@
         }
         updateTime();
         setInterval(updateTime, 60000);
+
+        // ★ Windows設定を開く機能追加 ★
+        function openSetting(type) {
+            let uri = "";
+            switch(type) {
+                case "system":
+                    uri = "ms-settings:display"; // システム > ディスプレイ
+                    break;
+                case "devices":
+                    uri = "ms-settings:bluetooth"; // デバイス > Bluetooth
+                    break;
+                case "language":
+                    uri = "ms-settings:regionlanguage"; // 言語と地域
+                    break;
+                case "network":
+                    uri = "ms-settings:network-wifi"; // ネットワークとインターネット
+                    break;
+                case "personal":
+                    uri = "ms-settings:personalization"; // 個人用設定
+                    break;
+                case "apps":
+                    uri = "ms-settings:appsfeatures"; // アプリと機能
+                    break;
+                case "privacy":
+                    uri = "ms-settings:privacy"; // プライバシーとセキュリティ
+                    break;
+                case "update":
+                    uri = "ms-settings:windowsupdate"; // Windows Update
+                    break;
+                case "time":
+                    uri = "ms-settings:dateandtime"; // 日付と時刻
+                    break;
+                default:
+                    uri = "ms-settings:"; // トップページ
+            }
+            // Windowsの設定画面を起動
+            window.open(uri);
+        }
     </script>
 
     <script src="settei.js"></script>
-</body>                                         
-           
+</body>
+</html>   

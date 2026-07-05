@@ -19,8 +19,8 @@
       }
       body {
         height: 100vh;
-        /* 背景画像 */
-        background-image: url("taki.jpeg");
+        /* GitHub上の画像を直接読み込み（ローカルに画像不要） */
+        background-image: url("https://raw.githubusercontent.com/goldokita0206-byte/slimeOS/main/taki.jpeg");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -38,6 +38,8 @@
         padding: 2rem;
         color: #0b0333;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 10; /* シャボン玉より上に表示 */
       }
       .header {
         display: flex;
@@ -130,7 +132,7 @@
         line-height: 1.4;
       }
     </style>
-    <!-- シャボン玉アニメーション用 -->
+    <!-- シャボン玉アニメーション用：元の動き完全維持 -->
 <style>
 /* シャボン玉のコンテナ：画面全体に重ねて表示 */
 .bubble-container {
@@ -141,7 +143,7 @@
   height: 100%;
   overflow: hidden;
   pointer-events: none; /* クリックなどを透過して下のアイコンが使える */
-  z-index: 5; /* 背景より上、アイコンより下に調整可 */
+  z-index: 5; /* 背景より上、設定項目より下に調整済み */
 }
 
 /* シャボン玉本体 */
@@ -175,7 +177,7 @@
 }
 </style>
 
-<!-- シャボン玉を生成するJavaScript -->
+<!-- シャボン玉を生成するJavaScript：元の動作完全維持 -->
 <script>
 function createBubble() {
   const container = document.querySelector('.bubble-container');
@@ -231,7 +233,7 @@ window.addEventListener('load', () => {
         </div>
       </header>
 
-      <!-- メニューグリッド：Windows実設定起動 -->
+      <!-- メニューグリッド：元の項目＋言語項目追加 -->
       <main class="settings-grid">
         <div class="grid-item" onclick="openWindowsSetting('system')">
           <i class="fas fa-laptop icon-blue"></i>
@@ -245,6 +247,13 @@ window.addEventListener('load', () => {
           <div class="text">
             <h3>デバイス</h3>
             <p>Bluetooth、プリンター、マウス</p>
+          </div>
+        </div>
+        <div class="grid-item" onclick="openLangSettings()">
+          <i class="fas fa-language icon-blue"></i>
+          <div class="text">
+            <h3>言語</h3>
+            <p>表示言語・地域・キーボードの設定</p>
           </div>
         </div>
         <div class="grid-item" onclick="openWindowsSetting('mobile-devices')">
@@ -295,6 +304,11 @@ window.addEventListener('load', () => {
         const targetUrl = settingsMap[page] || 'ms-settings:';
         // プロトコルを実行して設定を起動
         window.open(targetUrl, '_self');
+      }
+
+      // 言語設定を開く関数（追加）
+      function openLangSettings() {
+        window.open('ms-settings:regionlanguage', '_self');
       }
     </script>
   </body>

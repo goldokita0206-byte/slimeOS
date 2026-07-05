@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -55,8 +55,8 @@
             font-family: "Segoe UI", sans-serif;
             height: 100vh;
             overflow: hidden;
-            /* 背景画像 */
-            background-image: url('image4.png');
+            /* GitHub上の image4.png を直接読み込み */
+            background-image: url('https://raw.githubusercontent.com/goldokita0206-byte/slimeOS/main/image4.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -121,13 +121,16 @@
                     <p class="text-white/70 text-sm">Bluetooth、プリンター、マウス</p>
                 </div>
             </div>
-			<div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openLangSettings()">
-			              <i class="fas fa-language icon-blue text-3xl mt-1"></i>
-			              <div class="text">
-			                  <h3 class="text-lg font-semibold mb-1">言語</h3>
-			                  <p class="text-white/70 text-sm">表示言語・地域・キーボードの設定</p>
-			              </div>
-			          </div>
+
+            <!-- 言語項目：クリックでWindows設定起動 -->
+            <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4" onclick="openLangSettings()">
+                <i class="fas fa-language icon-blue text-3xl mt-1"></i>
+                <div class="text">
+                    <h3 class="text-lg font-semibold mb-1">言語</h3>
+                    <p class="text-white/70 text-sm">表示言語・地域・キーボードの設定</p>
+                </div>
+            </div>
+
             <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
                 <i class="fas fa-globe icon-blue text-3xl mt-1"></i>
                 <div class="text">
@@ -169,7 +172,7 @@
             </div>
 
             <div class="grid-item bg-white/10 backdrop-blur-md rounded-xl p-5 shadow border border-white/15 cursor-pointer flex items-start gap-4">
-                <i class="fas fa-language icon-blue text-3xl mt-1"></i>
+                <i class="fas fa-clock icon-blue text-3xl mt-1"></i>
                 <div class="text">
                     <h3 class="text-lg font-semibold mb-1">時刻と言語</h3>
                     <p class="text-white/70 text-sm">日付、時刻、地域、言語</p>
@@ -229,9 +232,19 @@
         }
         updateTime();
         setInterval(updateTime, 60000);
+
+        // ✅ 言語設定を開く関数を追加
+        function openLangSettings() {
+            // Windows の言語・地域設定画面を起動
+            if (navigator.userAgent.includes('Windows')) {
+                window.open('ms-settings:regionlanguage', '_blank');
+            } else {
+                alert('この機能はWindows環境でのみ使用できます');
+            }
+        }
     </script>
 
-    <script src="settei.js"></script>
-</body>                                 
+</body>
+</html>                           
                                           
              

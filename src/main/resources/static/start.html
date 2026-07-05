@@ -291,9 +291,9 @@
             if (inputUser === validAccount.user && inputPass === validAccount.pass) {
                 loginError.textContent = "✅ ログイン成功！";
                 loginError.style.color = "#2e7d32";
-                // ↓ 遷移先を index8.html に修正
+                // ↓ 遷移先を slime.html に修正
                 setTimeout(() => {
-                    window.location.href = "index8.html";
+                    window.location.href = "slime.html";
                 }, 800);
             } else {
                 loginError.textContent = "❌ ユーザー名またはパスワードが違います";

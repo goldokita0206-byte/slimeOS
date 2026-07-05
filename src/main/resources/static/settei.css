@@ -3,7 +3,7 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
-  background-image: url("taki.jpeg"); /* ここで画像を指定 */
+  background-image: url("taki.jpg"); /* ここで画像を指定 */
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

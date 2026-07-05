@@ -1,127 +1,75 @@
 /* 全体設定 */
 body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  background-image: url("https://raw.githubusercontent.com/goldokita0206-byte/slimeOS/main/image4.png");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background-image: url('image4.png'); /* ここで画像を指定 */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: sans-serif;
 }
 
 /* コンテナ設定：背景をぼかして森を透かす */
 /* 1. コンテナのサイズと余白を調整 */
 .settings-container {
-  padding: 20px; /* 40pxから20pxに減らしてコンパクトに */
-  margin: 20px auto; /* 自動中央寄せに変更 */
-  max-width: 900px; /* 最大幅を決めて、広がりすぎないように制限 */
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  height: auto; /* 固定高さ(100vh)を解除し、中身に合わせて自動伸縮 */
+    padding: 20px;            /* 40pxから20pxに減らしてコンパクトに */
+    margin: 20px auto;       /* 自動中央寄せに変更 */
+    max-width: 900px;         /* 最大幅を決めて、広がりすぎないように制限 */
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    height: auto;             /* 固定高さ(100vh)を解除し、中身に合わせて自動伸縮 */
 }
 
 /* 2. グリッドの隙間を少し詰める */
 .settings-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px; /* 30pxから15pxに詰める */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;                /* 30pxから15pxに詰める */
 }
 
 /* 3. 各項目の余白を調整 */
 .grid-item {
-  padding: 10px; /* 15pxから10pxに小さく */
+    padding: 10px;            /* 15pxから10pxに小さく */
 }
 /* ヘッダー周り */
-.header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 40px;
-}
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-.avatar {
-  width: 60px;
-  height: 60px;
-  background: rgba(233, 125, 125, 0.3);
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
-}
+.header { display: flex; justify-content: space-between; margin-bottom: 40px; }
+.user-info { display: flex; align-items: center; gap: 15px; }
+.avatar { width: 60px; height: 60px; background: rgba(233, 125, 125, 0.3); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; }
 
-.user-details h1 {
-  font-size: 1.2rem;
-  margin: 0;
-}
-.user-details p {
-  font-size: 0.8rem;
-  color: #d1d1d1;
-  margin: 2px 0;
-}
-.user-details a {
-  color: #87ceeb;
-  text-decoration: none;
-  font-size: 0.8rem;
-}
+.user-details h1 { font-size: 1.2rem; margin: 0; }
+.user-details p { font-size: 0.8rem; color: #d1d1d1; margin: 2px 0; }
+.user-details a { color: #87ceeb; text-decoration: none; font-size: 0.8rem; }
 
 /* プロモバナー・ボタン */
-.btn-primary {
-  background: rgba(255, 255, 255, 0.2);
-  color: rgb(243, 112, 112);
-  border: 1px solid #fff;
-  padding: 5px 15px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-.btn-link {
-  background: none;
-  border: none;
-  color: #87ceeb;
-  cursor: pointer;
-}
+.btn-primary { background: rgba(255,255,255,0.2); color: rgb(243, 112, 112); border: 1px solid #fff; padding: 5px 15px; cursor: pointer; border-radius: 5px; }
+.btn-link { background: none; border: none; color: #87ceeb; cursor: pointer; }
 
 /* グリッドレイアウト */
 .settings-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
 }
 
 .grid-item {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  cursor: pointer;
-  padding: 15px;
-  border-radius: 15px;
-  transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 15px;
+    transition: 0.3s;
 }
 
 .grid-item:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
 }
 
 /* アイコンとテキスト */
-.icon-blue {
-  color: #0beb55;
-  font-size: 28px;
-  width: 40px;
-  text-align: center;
-}
-.text h3 {
-  font-size: 1rem;
-  margin: 0;
-}
-.text p {
-  font-size: 0.8rem;
-  color: #04361fde;
-  margin-top: 4px;
-}
+.icon-blue { color: #0beb55; font-size: 28px; width: 40px; text-align: center; }
+.text h3 { font-size: 1rem; margin: 0; }
+.text p { font-size: 0.8rem; color: #04361fde; margin-top: 4px; }

@@ -39,7 +39,7 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
       padding: 15px 0;
       font-size: 14px;
-      z-index: 50;
+      z-index: 50; /* 背面に配置 */
     }
 
     .sidebar nav ul { list-style: none; }
@@ -53,7 +53,7 @@
       margin: 2px 2px;
       transition: background 0.2s;
       position: relative;
-      z-index: 75;
+      z-index: 50;
     }
     .sidebar nav ul li a:hover { background: rgba(255,255,255,0.24); }
     .sidebar nav ul li a.active { background: #d8daebee; color: #fff; font-weight: 600; }
@@ -124,6 +124,17 @@
       margin-bottom: 4px;
     }
 
+    /* ========== ドライブ表示エリア：ピクチャ下に配置 ========== */
+    .drive-container {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      z-index: 90; /* 最前面に表示 */
+      pointer-events: auto; /* クリックを有効に */
+    }
+
     .drive-row {
       display: flex;
       align-items: center;
@@ -135,8 +146,7 @@
       cursor: pointer;
       width: fit-content;
       max-width: 360px;
-      position: relative;
-      z-index: 70;
+      transition: background 0.2s;
     }
     .drive-row:hover { background: rgba(255,255,255,0.4); }
     .drive-icon { font-size: 30px; }
@@ -331,17 +341,20 @@
       <a href="office.html" class="item"><div class="icon">📚</div><span>office</span></a>
     </div>
 
-    <div class="drive-row" onclick="openLocalDiskDialog()">
-      <div class="drive-icon">💽</div>
-      <div class="drive-info">
-        <div class="drive-name">ローカル ディスク (C:)</div>
-        <div class="progress-bar"><div class="progress-fill"></div></div>
-        <div class="drive-text">空き領域 128 GB / 146 GB</div>
+    <!-- ✅ 修正：ドライブ表示をピクチャアイコンの下に配置 -->
+    <div class="drive-container">
+      <div class="drive-row" onclick="openLocalDiskDialog()">
+        <div class="drive-icon">💽</div>
+        <div class="drive-info">
+          <div class="drive-name">ローカル ディスク (C:)</div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+          <div class="drive-text">空き領域 128 GB / 146 GB</div>
+        </div>
       </div>
-    </div>
-    <div class="drive-row" onclick="openDriveDialog()">
-      <div class="drive-icon">💿</div>
-      <div class="drive-info"><div class="drive-name">DVD/CD-RW (D:) / USB</div></div>
+      <div class="drive-row" onclick="openDriveDialog()">
+        <div class="drive-icon">💿</div>
+        <div class="drive-info"><div class="drive-name">DVD/CD-RW (D:) / USB</div></div>
+      </div>
     </div>
   </div>
 
@@ -424,47 +437,4 @@
       for(let i=1;i<=3;i++) folderDatabase.ドキュメント.push({type:"folder",name:`新しいフォルダー (${i})`});
       for(let i=1;i<=3;i++) folderDatabase.ドキュメント.push({type:"file",name:`テキストドキュメント (${i}).txt`,icon:"📝"});
       for(let i=1;i<=3;i++) folderDatabase.ピクチャ.push({type:"file",name:`思い出の写真 (${i}).jpg`,icon:"🖼️"});
-      for(let i=1;i<=3;i++) folderDatabase.ビデオ.push({type:"file",name:`旅の記録 (${i}).mp4`,icon:"🎬"});
-      folderDatabase.オフィス.push({type:"office-doc",name:"サンプル文書.docx",icon:"📝",url:"https://view.officeapps.live.com/op/view.aspx?src=https://calibre-ebook.com/downloads/demos/demo.docx"});
-      folderDatabase.オフィス.push({type:"office-sheet",name:"サンプル表計算.xlsx",icon:"📊",url:"https://view.officeapps.live.com/op/view.aspx?src=https://calibre-ebook.com/downloads/demos/demo.xlsx"});
-    }
-    function renderContents(n){
-      let h=""; const d=folderDatabase[n];
-      if(!d.length){windowContent.innerHTML='<p style="color:#999;font-size:13px;">このフォルダは空です。</p>';return;}
-      d.forEach(x=>{
-        if(x.type==="folder") h += `<div class="file-item"><span style="font-size:16px;">📁</span><span>${x.name}</span></div>`;
-        else if(x.type.startsWith("office-")) h += `<div class="file-item" onclick="launchOffice('${x.name}','${x.url}')"><span style="font-size:16px;">${x.icon}</span><span style="color:#0066cc;font-weight:bold;">${x.name}</span></div>`;
-        else h += `<div class="file-item"><span style="font-size:16px;">${x.icon}</span><span>${x.name}</span></div>`;
-      });
-      windowContent.innerHTML=h;
-    }
-    function launchOffice(n,u){officeWindowTitle.innerText=n+" - 閲覧";officeFrame.src=u;officeAppWindow.style.display="flex"}
-    function closeOfficeWindow(){officeAppWindow.style.display="none";officeFrame.src=""}
-    function openWindow(n){currentOpenFolder=n;windowTitle.innerText=n+" - ファイルマネージャー";renderContents(n);fileManager.style.display="flex"}
-    function closeWindow(){fileManager.style.display="none";currentOpenFolder=""}
-    function createNewFolder(){if(!currentOpenFolder)return;const c=folderDatabase[currentOpenFolder].filter(x=>x.type==="folder").length+1;folderDatabase[currentOpenFolder].push({type:"folder",name:`新しいフォルダー (${c})`});renderContents(currentOpenFolder)}
-    function createNewFile(){if(!currentOpenFolder)return;const c=folderDatabase[currentOpenFolder].filter(x=>x.type.includes("file")).length+1;let icon="📝",ext=".txt",type="file",url="";if(currentOpenFolder==="オフィス"){icon="📝";ext=".docx";type="office-doc";url="https://view.officeapps.live.com/op/view.aspx?src=https://calibre-ebook.com/downloads/demos/demo.docx"}if(currentOpenFolder==="ピクチャ"){icon="🖼️";ext=".jpg"}if(currentOpenFolder==="ビデオ"){icon="🎬";ext=".mp4"}folderDatabase[currentOpenFolder].push({type,name:`新規作成ファイル (${c})${ext}`,icon,url});renderContents(currentOpenFolder)}
-    document.addEventListener("click",()=>customMenu.style.display="none");
-    document.addEventListener("contextmenu",e=>{e.preventDefault();customMenu.style.left=e.pageX+"px";customMenu.style.top=e.pageY+"px";customMenu.style.display="block"});
-    initDatabase();
-
-    function openLocalDiskDialog(){document.getElementById('localFileInput').click()}
-    document.addEventListener('DOMContentLoaded',()=>{
-      const i=document.getElementById('localFileInput');if(!i)return;
-      i.addEventListener('change',e=>{
-        const f=e.target.files;if(!f||!f.length)return;
-        document.querySelector('.drive-window')?.remove();
-        let h=`<h4>📂 ローカルディスク ファイル一覧（${f.length}件）</h4>`;
-        for(const x of f){
-          const s=x.size>1048576?`${(x.size/1048576).toFixed(1)} MB`:`${(x.size/1024).toFixed(1)} KB`;
-          h += `<div class="drive-item">${x.type?'📄':'📁'} ${x.webkitRelativePath||x.name} (${s})</div>`;
-        }
-        const w=document.createElement('div');w.className='drive-window';w.innerHTML=`<div class="drive-header"><span>ローカル ディスク (C:)</span><button class="drive-close" onclick="this.parentElement.parentElement.remove()">×</button></div><div class="drive-list">${h}</div>`;
-        document.body.appendChild(w);i.value='';
-      });
-    });
-
-    document.addEventListener("click",e=>{const m=document.getElementById('startMenu'),b=document.querySelector('button[onclick="toggleMenu()"]');if(m&&!m.contains(e.target)&&!b.contains(e.target)){m.classList.add('opacity-0','scale-95')}});
-  </script>
-</body>
-</html>
+      for(let i=1;i<=3;i++) folderDatabase

@@ -39,7 +39,7 @@
       border: 1px solid rgba(255, 255, 255, 0.3);
       padding: 15px 0;
       font-size: 14px;
-      z-index: 50; /* 背面に配置 */
+      z-index: 50;
     }
 
     .sidebar nav ul { list-style: none; }
@@ -124,15 +124,15 @@
       margin-bottom: 4px;
     }
 
-    /* ========== ドライブ表示エリア：ピクチャ下に配置 ========== */
+    /* ========== ドライブ表示エリア：ピクチャ下に固定 ========== */
     .drive-container {
       margin-top: 1rem;
       display: flex;
       flex-direction: column;
       gap: 10px;
       position: relative;
-      z-index: 90; /* 最前面に表示 */
-      pointer-events: auto; /* クリックを有効に */
+      z-index: 90;
+      pointer-events: auto;
     }
 
     .drive-row {
@@ -163,7 +163,7 @@
     .progress-fill { width: 18%; height: 100%; background: #0099ff; border-radius: 4px 0 0 4px; }
     .drive-text { font-size: 12px; color: #444; }
 
-    /* ========== スタートメニュー：最優先で手前に ========== */
+    /* ========== スタートメニュー ========== */
     .menu-glass {
       background: rgba(30,41,59,0.85);
       backdrop-filter: blur(15px);
@@ -171,7 +171,7 @@
       position: fixed;
       left: 210px;
       bottom: 60px;
-      z-index: 9999 !important; /* 最前面に固定 */
+      z-index: 9999 !important;
     }
 
     /* ========== タスクバー ========== */
@@ -187,10 +187,10 @@
       align-items: center;
       padding: 0 16px;
       border-top: 1px solid rgba(56,189,248,0.2);
-      z-index: 9998 !important; /* メニューの1つ下 */
+      z-index: 9998 !important;
     }
 
-    /* ========== その他のウィンドウ ========== */
+    /* ========== ウィンドウ ========== */
     .window {
       display: none;
       position: absolute;
@@ -341,7 +341,7 @@
       <a href="office.html" class="item"><div class="icon">📚</div><span>office</span></a>
     </div>
 
-    <!-- ✅ 修正：ドライブ表示をピクチャアイコンの下に配置 -->
+    <!-- ✅ ドライブ：ピクチャの下に固定表示 -->
     <div class="drive-container">
       <div class="drive-row" onclick="openLocalDiskDialog()">
         <div class="drive-icon">💽</div>
@@ -415,26 +415,82 @@
     updateTime(); setInterval(updateTime,60000);
 
     function openDriveDialog() { document.getElementById('driveFileInput').click(); }
+    function openLocalDiskDialog() { document.getElementById('localFileInput').click(); }
+
     document.addEventListener('DOMContentLoaded',()=>{
-      const i=document.getElementById('driveFileInput'); if(!i) return;
-      i.addEventListener('change',e=>{
-        const f=e.target.files; if(!f||!f.length) return;
-        document.querySelector('.drive-window')?.remove();
-        let h=`<h4>📂 選択ファイル一覧（${f.length}件）</h4>`;
-        for(const x of f){
-          const s=x.size>1048576?`${(x.size/1048576).toFixed(1)} MB`:`${(x.size/1024).toFixed(1)} KB`;
-          h += `<div class="drive-item">${x.type?'📄':'📁'} ${x.webkitRelativePath||x.name} (${s})</div>`;
-        }
-        const w=document.createElement('div'); w.className='drive-window'; w.innerHTML=`<div class="drive-header"><span>DVD RW ドライブ (D:)</span><button class="drive-close" onclick="this.parentElement.parentElement.remove()">×</button></div><div class="drive-list">${h}</div>`;
-        document.body.appendChild(w); i.value='';
-      });
+      const driveInput=document.getElementById('driveFileInput');
+      if(driveInput){
+        driveInput.addEventListener('change',e=>{
+          const f=e.target.files; if(!f||!f.length) return;
+          document.querySelector('.drive-window')?.remove();
+          let h=`<h4>📂 選択ファイル一覧（${f.length}件）</h4>`;
+          for(const x of f){
+            const s=x.size>1048576?`${(x.size/1048576).toFixed(1)} MB`:`${(x.size/1024).toFixed(1)} KB`;
+            h += `<div class="drive-item">${x.type?'📄':'📁'} ${x.webkitRelativePath||x.name} (${s})</div>`;
+          }
+          const w=document.createElement('div');
+          w.className='drive-window';
+          w.innerHTML=`<div class="drive-header"><span>DVD RW ドライブ (D:)</span><button class="drive-close" onclick="this.parentElement.parentElement.remove()">×</button></div><div class="drive-list">${h}</div>`;
+          document.body.appendChild(w);
+          driveInput.value='';
+        });
+      }
+
+      const localInput=document.getElementById('localFileInput');
+      if(localInput){
+        localInput.addEventListener('change',e=>{
+          const f=e.target.files; if(!f||!f.length) return;
+          document.querySelector('.drive-window')?.remove();
+          let h=`<h4>📂 ローカル ディスク (C:) ファイル一覧（${f.length}件）</h4>`;
+          for(const x of f){
+            const s=x.size>1048576?`${(x.size/1048576).toFixed(1)} MB`:`${(x.size/1024).toFixed(1)} KB`;
+            h += `<div class="drive-item">${x.type?'📄':'📁'} ${x.webkitRelativePath||x.name} (${s})</div>`;
+          }
+          const w=document.createElement('div');
+          w.className='drive-window';
+          w.innerHTML=`<div class="drive-header"><span>ローカル ディスク (C:)</span><button class="drive-close" onclick="this.parentElement.parentElement.remove()">×</button></div><div class="drive-list">${h}</div>`;
+          document.body.appendChild(w);
+          localInput.value='';
+        });
+      }
     });
 
     const fileManager=document.getElementById('fileManager'), windowTitle=document.getElementById('windowTitle'), windowContent=document.getElementById('windowContent'), customMenu=document.getElementById('customMenu'), officeAppWindow=document.getElementById('officeAppWindow'), officeWindowTitle=document.getElementById('officeWindowTitle'), officeFrame=document.getElementById('officeFrame');
     let currentOpenFolder="";
     const folderDatabase={ドキュメント:[],ピクチャ:[],ビデオ:[],オフィス:[]};
+    
     function initDatabase(){
       for(let i=1;i<=3;i++) folderDatabase.ドキュメント.push({type:"folder",name:`新しいフォルダー (${i})`});
       for(let i=1;i<=3;i++) folderDatabase.ドキュメント.push({type:"file",name:`テキストドキュメント (${i}).txt`,icon:"📝"});
       for(let i=1;i<=3;i++) folderDatabase.ピクチャ.push({type:"file",name:`思い出の写真 (${i}).jpg`,icon:"🖼️"});
-      for(let i=1;i<=3;i++) folderDatabase
+      for(let i=1;i<=3;i++) folderDatabase.ビデオ.push({type:"file",name:`旅の記録 (${i}).mp4`,icon:"🎬"});
+      folderDatabase.オフィス.push({type:"office-doc",name:"サンプル文書.docx",icon:"📝",url:"https://view.officeapps.live.com/op/view.aspx?src=https://calibre-ebook.com/downloads/demos/demo.docx"});
+      folderDatabase.オフィス.push({type:"office-sheet",name:"サンプル表計算.xlsx",icon:"📊",url:"https://view.officeapps.live.com/op/view.aspx?src=https://calibre-ebook.com/downloads/demos/demo.xlsx"});
+    }
+
+    function renderContents(n){
+      let h=""; const d=folderDatabase[n];
+      if(!d.length){windowContent.innerHTML='<p style="color:#999;font-size:13px;">このフォルダは空です。</p>';return;}
+      d.forEach(x=>{
+        if(x.type==="folder") h += `<div class="file-item"><span style="font-size:16px;">📁</span><span>${x.name}</span></div>`;
+        else if(x.type.startsWith("office-")) h += `<div class="file-item" onclick="launchOffice('${x.name}','${x.url}')"><span style="font-size:16px;">${x.icon}</span><span style="color:#0066cc;font-weight:bold;">${x.name}</span></div>`;
+        else h += `<div class="file-item"><span style="font-size:16px;">${x.icon}</span><span>${x.name}</span></div>`;
+      });
+      windowContent.innerHTML=h;
+    }
+
+    function launchOffice(n,u){officeWindowTitle.innerText=n+" - 閲覧";officeFrame.src=u;officeAppWindow.style.display="flex"}
+    function closeOfficeWindow(){officeAppWindow.style.display="none";officeFrame.src=""}
+    function openWindow(n){currentOpenFolder=n;windowTitle.innerText=n+" - ファイルマネージャー";renderContents(n);fileManager.style.display="flex"}
+    function closeWindow(){fileManager.style.display="none";currentOpenFolder=""}
+    function createNewFolder(){if(!currentOpenFolder)return;const c=folderDatabase[currentOpenFolder].filter(x=>x.type==="folder").length+1;folderDatabase[currentOpenFolder].push({type:"folder",name:`新しいフォルダー (${c})`});renderContents(currentOpenFolder)}
+    function createNewFile(){if(!currentOpenFolder)return;const c=folderDatabase[currentOpenFolder].filter(x=>x.type.includes("file")).length+1;let icon="📝",ext=".txt",type="file",url="";if(currentOpenFolder==="オフィス"){icon="📝";ext=".docx";type="office-doc";url="https://view.officeapps.live.com/op/view.aspx?src=https://calibre-ebook.com/downloads/demos/demo.docx"}if(currentOpenFolder==="ピクチャ"){icon="🖼️";ext=".jpg"}if(currentOpenFolder==="ビデオ"){icon="🎬";ext=".mp4"}folderDatabase[currentOpenFolder].push({type,name:`新規作成ファイル (${c})${ext}`,icon,url});renderContents(currentOpenFolder)}
+
+    document.addEventListener("click",()=>customMenu.style.display="none");
+    document.addEventListener("contextmenu",e=>{e.preventDefault();customMenu.style.left=e.pageX+"px";customMenu.style.top=e.pageY+"px";customMenu.style.display="block"});
+    initDatabase();
+
+    document.addEventListener("click",e=>{const m=document.getElementById('startMenu'),b=document.querySelector('button[onclick="toggleMenu()"]');if(m&&!m.contains(e.target)&&!b.contains(e.target)){m.classList.add('opacity-0','scale-95')}});
+  </script>
+</body>
+</html>

@@ -1,17 +1,16 @@
 Slime OS Final — Web デスクトップシステム
-ブラウザ上で動作する OS 風インターフェース型 Web アプリケーション
-
+（ブラウザ上で動作する OS 風 Web アプリケーションを作成しました。）
 
 1. アプリケーション概要
-Slime OS Final は、Windows ライクな直感的な操作感とスライムをモチーフにした親しみやすいデザインを融合させた仮想デスクトップシステムです。
-職業訓練校の課題として、「画面設計」「ユーザー認証」「データ管理」の基礎を体系的に学ぶことを目的に開発しました。
-解決する課題
-ファイル管理・文書編集を 1 画面に統合し、操作の効率性を向上
-ログイン機能により、個人のデータを安全に管理できる環境を提供
+Slime OS Final は、Windows ライクな直感的な操作感とスライムをモチーフにした親しみやすいデザインを融合させた仮想デスクトップです。
+
+<開発背景>
+職業訓練校で学習したJava（Spring Boot）・HTML・CSS・JavaScript を活用し、
+「画面設計」「ユーザー認証」「データ管理」の基礎を体系的に作成し、直感的で楽  「Webブラウザ上でWindowsのような操作感を再現する」ことを目標に、楽しく操作できる仮想デスクトップ環境を目指して開発しました。
 
 
 2. アクセス情報
-
+3. 
 GitHub リポジトリ URL：https://github.com/goldokita0206-byte/slimeOS
 ローカル実行 URL：http://localhost:8080/start.html
 
@@ -19,58 +18,27 @@ GitHub リポジトリ URL：https://github.com/goldokita0206-byte/slimeOS
 ユーザー名：user
 パスワード：password
 
-
-3. 画面・機能紹介
-メイン画面
-【ここにスクリーンショット画像を挿入】
-左下の「Slime OS」ボタンでスタートメニューを展開
-デスクトップアイコンから各機能・フォルダへ直接アクセス
-ファイル管理画面
-【ここにスクリーンショット画像を挿入】
-Home / Document / Download / Picture / Video など用途別に整理
-内蔵 Office 機能でテキスト文書の作成・編集に対応
-ログイン認証画面
-【ここにスクリーンショット画像を挿入】
-ユーザー名・パスワードによる認証を実装
-ブラウザのパスワード保存機能と連携し、安全性と利便性を両立
-
-🖥️ SlimeOS
-**スライムの世界を楽しめる、OS風Webデスクトップ**
-
-
-SlimeOSは、スライムをテーマにしたWebブラウザ上で動作するOS風デスクトップアプリケーションです。
-職業訓練校で学習したJava（Spring Boot）・HTML・CSS・JavaScript を活用し、直感的で楽しく操作できる仮想デスクトップ環境を目指して開発しました。
-
-
-🔗 **公開URL**：`https://your-deploy-url.example.com`
-💻 **ローカル確認URL**：`http://localhost:8080`
-
-
- 🎯 開発背景
-職業訓練校でJava・Web開発の基礎を学んだ内容を、実践的な形でまとめるために制作しました。
-「Webブラウザ上でWindowsのような操作感を再現する」ことを目標に、以下の技術の習得・定着を目的としています。
-- HTML/CSS/JavaScriptによるフロントエンド開発
-- Spring BootによるWebアプリケーションの骨格作成
-- データベース連携によるログイン認証機能の実装
-また、単なる学習用アプリに留まらず、「スライム」の世界観を取り入れ、親しみやすく楽しいUIデザインを意識しました。
-
-
-🔄 画面遷移図
-
+4. 画面・機能紹介
+<画面遷移図>
 
 １．起動画面
 
 <img width="462" height="252" alt="image" src="https://github.com/user-attachments/assets/d7bad2f0-16d4-490a-932c-8ce1746ca3e3" />
 
-２．ログイン画面 ユーザー名:user。パスワード：password入力
+２．ログイン画面 
+
+ユーザー名・パスワードによる認証を実装
+（ユーザー名:user。パスワード：passwordを入力してください。）
 
 <img width="452" height="253" alt="image" src="https://github.com/user-attachments/assets/ff098f6d-abc0-43e5-85ee-0dec05ec5528" />
 
-３．メニュー画面　
+３．メイン画面　
 
 <img width="475" height="280" alt="image" src="https://github.com/user-attachments/assets/da437947-c7a6-47ba-b88e-f73dfe1ce7a8" />
 
-４．スタートメニュー画面
+４．メニュー画面
+
+左下の「Slime OS」ボタンでスタートメニューを選び、各機能・フォルダへ画　　面遷移できます
 
 <img width="474" height="263" alt="image" src="https://github.com/user-attachments/assets/b17d0a96-8e8f-44b8-8933-dd5254fff783" />
 

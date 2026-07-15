@@ -21,31 +21,32 @@ URL：https://github.com/goldokita0206-byte/slimeOS
 ユーザー名：user
 パスワード：password
 
-4. 画面・機能紹介
+3. 画面・機能紹介
 <画面遷移図>
 
-１．起動画面
+・起動画面
 
 <img width="462" height="252" alt="image" src="https://github.com/user-attachments/assets/d7bad2f0-16d4-490a-932c-8ce1746ca3e3" />
 
-２．ログイン画面 
+・ログイン画面 
 
 ユーザー名・パスワードによる認証を実装
 （ユーザー名:user。パスワード：passwordを入力してください。）
 
 <img width="452" height="253" alt="image" src="https://github.com/user-attachments/assets/ff098f6d-abc0-43e5-85ee-0dec05ec5528" />
 
-３．メイン画面　
+・メイン画面　
 
 <img width="475" height="280" alt="image" src="https://github.com/user-attachments/assets/da437947-c7a6-47ba-b88e-f73dfe1ce7a8" />
 
-４．メニュー画面
+・メニュー画面
 
 左下の「Slime OS」ボタンでスタートメニューを選び、各機能・フォルダへ画　　面遷移できます
 
 <img width="474" height="263" alt="image" src="https://github.com/user-attachments/assets/b17d0a96-8e8f-44b8-8933-dd5254fff783" />
 
-5．各種メニュー画面　　
+
+・各種メニュー画面　　
 
 ・スライムの森　　　　　　　　　　　　　　　　　　・水辺の広場
 
@@ -105,26 +106,29 @@ Eclipse IDE / Gradle / Git / GitHub
 
 6. ローカル環境での起動手順
 
-1.リポジトリを取得
+（ア）.リポジトリを取得
 
-2.git clone https://github.com/goldokita0206-byte/slimeOS.git
+（イ）.git clone https://github.com/goldokita0206-byte/slimeOS.git
 
-3.開発環境に読み込み
+（ウ）.開発環境に読み込み
 Eclipse を起動 → ファイル > インポート > Gradle > 既存のGradleプロジェクト
 
-4.クローンしたフォルダを選択し、自動ビルド完了まで待機
+（エ）.クローンしたフォルダを選択し、自動ビルド完了まで待機
 
-5.アプリケーション起動
+（オ）.アプリケーション起動
 SlimeosFinalApplication.java を右クリック
 
-6.実行 > Spring Boot アプリケーション を選択
+（カ）.実行 > Spring Boot アプリケーション を選択
 
 コンソールに「起動完了」のメッセージが表示されたら準備完了
 
-7.ブラウザからアクセス
+（キ）.ブラウザからアクセス
 
-plaintext
-http://localhost:8080/start.html
+  googleやEgagの、URL欄に下記アドレスを入力
+
+　http://localhost:8080/start.html
+
+　Enterキーを押す。
 
 
 7. 開発背景・こだわりポイント

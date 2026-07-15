@@ -1,4 +1,4 @@
-Slime OS Final — Web デスクトップシステム
+Slime OS Final — Web デスクトップ　
 （ブラウザ上で動作する OS 風 Web アプリケーションを作成しました。）
 
 1. アプリケーション概要

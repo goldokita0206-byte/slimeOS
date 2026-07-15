@@ -125,7 +125,7 @@ SlimeosFinalApplication.java を右クリック
 
 （キ）.ブラウザからアクセス
 
-  googleやEgagの、URL欄に下記アドレスを入力
+  googleやEgagの、URL欄に下記アドレスを入力して、Enterキーを押す。
 
 　http://localhost:8080/start.html　　Enterキーを押す。
 

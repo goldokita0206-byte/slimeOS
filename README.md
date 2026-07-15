@@ -64,29 +64,10 @@ URL：https://github.com/goldokita0206-byte/slimeOS
 
 4. 使用技術一覧表
 
-区分　/　採用技術
+<img width="706" height="301" alt="image" src="https://github.com/user-attachments/assets/1aadd11c-6e56-4d79-b477-9987ab953702" />
 
-・フロントエンド
-
-HTML5 / CSS3 / JavaScript / Tailwind  / CSS
-
-・バックエンド
-
-Java 17 / Spring Boot 3.4.1
-
-・データベース　
-
-H2 Database（インメモリ型）
-
-・開発ツール
-
-Eclipse IDE / Gradle / Git / GitHub
   
-
-
-
-
-5. データベース設計（ER 全体図）
+  5. データベース設計（ER 全体図）
 
 <img width="691" height="398" alt="image" src="https://github.com/user-attachments/assets/bccb1a5d-5f33-4ef3-8a56-f6ecdc5bf916" />
 

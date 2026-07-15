@@ -42,7 +42,7 @@ URL：https://github.com/goldokita0206-byte/slimeOS
 
 ・メニュー画面
 
-左下の「Slime OS」ボタンでスタートメニューを選び、各機能・フォルダへ画　　面遷移できます
+左下の「Slime OS」ボタンでスタートメニューを選び、各機能・フォルダへ画面遷移できます
 
 <img width="474" height="263" alt="image" src="https://github.com/user-attachments/assets/b17d0a96-8e8f-44b8-8933-dd5254fff783" />
 

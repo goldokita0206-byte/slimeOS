@@ -63,8 +63,7 @@ URL：https://github.com/goldokita0206-byte/slimeOS
 
 4. 使用技術一覧表
 
-区分
-採用技術
+区分　/　採用技術
 
 ・フロントエンド
 

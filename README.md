@@ -20,7 +20,7 @@ GitHub リポジトリ URL：https://github.com/goldokita0206-byte/slimeOS
 パスワード：password
 
 
-5. 画面・機能紹介
+3. 画面・機能紹介
 メイン画面
 【ここにスクリーンショット画像を挿入】
 左下の「Slime OS」ボタンでスタートメニューを展開

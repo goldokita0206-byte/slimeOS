@@ -47,11 +47,11 @@ URL：https://github.com/goldokita0206-byte/slimeOS
 
 5．各種メニュー画面　　
 
-・スライムの森　　                        ・水辺の広場
+・スライムの森　　　　　　　　　　　　　　　　　　・水辺の広場
 
 <img width="649" height="231" alt="image" src="https://github.com/user-attachments/assets/17ac9191-c125-4182-a81a-b290dd6ea066" />
 
-・カレンダー　　　　　　　　　　　　　　　　・office
+・カレンダー　　　　　　　　　　　　　　　　　　　・office
 
 <img width="623" height="188" alt="image" src="https://github.com/user-attachments/assets/4f7dd776-c790-4d39-b834-e947ee02faa7" />
 

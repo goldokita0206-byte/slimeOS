@@ -11,14 +11,16 @@ Slime OS Final は、Windows ライクな直感的な操作感とスライムを
 
 
 2. アクセス情報
+3. 
 GitHub リポジトリ URL：https://github.com/goldokita0206-byte/slimeOS
 ローカル実行 URL：http://localhost:8080/start.html
+
 テスト用アカウント
 ユーザー名：user
 パスワード：password
 
 
-4. 画面・機能紹介
+5. 画面・機能紹介
 メイン画面
 【ここにスクリーンショット画像を挿入】
 左下の「Slime OS」ボタンでスタートメニューを展開

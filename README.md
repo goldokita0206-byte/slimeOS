@@ -63,19 +63,20 @@ URL：https://github.com/goldokita0206-byte/slimeOS
 
 区分
 採用技術
-フロントエンド
+
+・フロントエンド
 
 HTML5 / CSS3 / JavaScript / Tailwind  / CSS
 
-バックエンド
+・バックエンド
 
 Java 17 / Spring Boot 3.4.1
 
-データベース　
+・データベース　
 
 H2 Database（インメモリ型）
 
-開発ツール
+・開発ツール
 
 Eclipse IDE / Gradle / Git / GitHub
   

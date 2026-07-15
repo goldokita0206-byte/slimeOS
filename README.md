@@ -96,9 +96,7 @@ URL：https://github.com/goldokita0206-byte/slimeOS
 
 1.リポジトリを取得
 
-2.plaintext
-git clone https://github.com/goldokita0206-byte/slimeOS.git
-cd slimeOS
+2.git clone https://github.com/goldokita0206-byte/slimeOS.git
 
 3.開発環境に読み込み
 Eclipse を起動 → ファイル > インポート > Gradle > 既存のGradleプロジェクト
